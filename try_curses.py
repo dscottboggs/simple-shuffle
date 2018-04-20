@@ -19,12 +19,8 @@ def main(screen):
         int((curses.COLS-len(outstr))/2),
         outstr
     )
-    screen.refresh()
-    ch1 = screen.getch()
-    screen.nodelay(True)
-    ch2 = screen.getch()
-    screen.nodelay(False)
-    return str(ch1) + ' ' + str(ch2)
+    screen.halfdelay(10)
+    return screen.getch()
 
 
 print(curses.wrapper(main))
