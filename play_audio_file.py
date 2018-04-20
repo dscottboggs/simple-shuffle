@@ -2,6 +2,8 @@
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from magic import detect_from_filename as get_filetype
+from multiprocessing import Pool
+from time import sleep
 
 mixer.init(frequency=44100)
 valid_filetypes = (
@@ -9,6 +11,7 @@ valid_filetypes = (
     "audio/x-flac",
     "audio/ogg"
 )
+
 
 def play_audio_file(filename: str):
     """Plays an audio file."""
@@ -23,4 +26,14 @@ def play_audio_file(filename: str):
             + "due to the underlying library capabilities."
         )
 
-play_audio_file("/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg")
+
+def stop_audio_playback():
+    mixer.music.stop()
+
+
+with Pool() as pool:
+    pool.apply(
+        play_audio_file, "/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg"
+    )
+    sleep(5)
+    mixer.music.stop()
