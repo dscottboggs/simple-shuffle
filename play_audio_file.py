@@ -156,6 +156,7 @@ class Player():
                 'y': maxlines - 1
             }
         })
+        return text
 
     def show(self):
         """Loop curses display and keycode watching.
