@@ -197,6 +197,6 @@ def char_to_int(char: str) -> int:
             )
         ), 16
     )
-
+ 
 
 Player("/home/scott/Music")
