@@ -211,11 +211,22 @@ class Player():
                 y: y coord
             }
         """
+        def log(text, *fstrings):
+            """Function compatible with logger.funcs to write to a file.
+
+            You can't display shit when curses is active.
+            """
+            if fstrings:
+                with open(Config.curses_logfile, 'a') as logfile:
+                    logfile.write(text % fstrings + '\n')
+            else:
+                with open(Config.curses_logfile, 'a') as logfile:
+                    logfile.write(text + '\n')
         screen.clear()
         max_lines, max_cols = screen.getmaxyx()
-        logger.debug("Max width: %d\nMax height:%d", max_cols, max_lines)
+        log("Max width: %d\nMax height:%d", max_cols, max_lines)
         for txt, coords in text(max_cols, max_lines).items():
-            logger.debug(
+            log(
                 "Adding string %s\nAt %d columns by %d lines",
                 txt(),
                 coords['x'],

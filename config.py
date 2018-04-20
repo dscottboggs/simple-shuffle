@@ -5,6 +5,7 @@ from logging.config import dictConfig
 
 def get_logging_config():
     """Check for a loggercfg.json file, or return a default config."""
+    curses_logfile = "/home/scott/Documents/code/simple-shuffle/curses_logfile.txt"
     try:
         with open("loggercfg.json") as cfg:
             return cfg
