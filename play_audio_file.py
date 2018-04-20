@@ -92,8 +92,13 @@ def display_info(filename: str):
                 cursesdisplay,
                 get_song_info(filename)
             )
-            if button_press:
-                print(button_press)
+            if button_press == ' ':
+                if mixer.music.get_busy():
+                    mixer.music.pause()
+                else:
+                    mixer.music.unpause()
+            if button_press == 's':
+                mixer.music.stop()
                 break
 
 
