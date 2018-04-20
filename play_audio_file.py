@@ -152,7 +152,7 @@ class Player():
         # })
         text.update({
             lambda: "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
-                'x': int(maxcolumns - 12),
+                'x': int(maxcolumns - 15),
                 'y': int(maxlines - 1)
             }
         })
