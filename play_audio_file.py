@@ -179,7 +179,7 @@ class Player():
         outtxt: str = ''
         try:
             # the default output
-            outtxt = "%s by %s,nTrack %d from their album, %s." % (
+            outtxt = "%s by %s, track %d from the album, %s." % (
                 tags['title'][0],
                 tags['artist'][0],
                 int(tags['tracknumber'][0]),
