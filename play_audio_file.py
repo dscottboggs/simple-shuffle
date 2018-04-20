@@ -208,7 +208,7 @@ class Player():
                 y: y coord
             }
         """
-        print(screen.getyx())
+        log.debug("Screen size? %s", screen.getyx())
         screen.clear()
         for txt, coords in text(screen).items():
             screen.addstr(
