@@ -68,7 +68,7 @@ def play_audio_file(filename: str):
 def cursesdisplay(screen, text: str) -> str:
     """Display some text centered in the screen."""
     screen.clear()
-    for lineno, line in zip(range(text.split('\n')), text.split('\n')):
+    for lineno, line in zip(range(len(text.split('\n'))), text.split('\n')):
         screen.addstr(
             int((curses.LINES - len(text.split('\n'))) / 2),
             int((curses.COLS-len(text))/2),
