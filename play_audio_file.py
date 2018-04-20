@@ -325,14 +325,14 @@ class Player():
         for txt, coords in text(max_cols, max_lines).items():
             logger(
                 "Adding string %s\nAt %d columns by %d lines",
-                txt(),
+                txt,
                 coords['x'],
                 coords['y']
             )
             screen.addstr(
                 coords['y'],
                 coords['x'],
-                txt()
+                txt
             )
         screen.refresh()
         return screen.getch()
