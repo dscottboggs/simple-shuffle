@@ -240,12 +240,12 @@ class Player():
                     'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
             })
-        # text.update({     # I'll come back to this
-        #     lambda: float(mixer.music.get_pos()/100) + " seconds": {
-        #         'x': maxcolumns/3,
-        #         'y': maxlines - 1
-        #     }
-        # })
+        text.update({     # I'll come back to this
+            float(mixer.music.get_pos()/100) + " seconds": {
+                'x': maxcolumns/3,
+                'y': maxlines - 1
+            }
+        })
         text.update({
             "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
                 'x': int(maxcolumns - 17),
