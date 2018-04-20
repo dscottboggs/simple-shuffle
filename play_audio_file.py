@@ -101,7 +101,7 @@ def display_info(filename: str):
             print(get_song_info(filename))
     except KeyError:
         # launched from term, use curses display
-        controls_wrapper(filename)
+        controls_wrapper(get_song_info(filename))
 
 
 play_audio_file("/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg")
