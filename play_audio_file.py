@@ -87,7 +87,7 @@ class Player():
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
-        self.begin_playback()
+        self.begin_playback(self.shuffle.current)
         self.show()
 
     def restart(self):
