@@ -14,7 +14,6 @@ from strict_hint import strict
 from config import Config
 
 log = Config.logger
-help(log)
 mixer.init(frequency=44100)
 valid_filetypes = (
     "audio/x-wav",
@@ -140,9 +139,17 @@ class Player():
             button_press = curses.wrapper(self.display, self.song_info)
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
-                mixer.music.set_volume(mixer.music.get_volume() - 5)
+                log.debug(
+                    "Volume down button pressed. Current volume: %f.",
+                    mixer.music.get_volume()
+                )
+                mixer.music.set_volume(mixer.music.get_volume() - 0.05)
             if button_press == curses.KEY_UP:
-                mixer.music.set_volume(mixer.music.get_volume() + 5)
+                log.debug(
+                    "Volume up button pressed. Current volume: %f.",
+                    mixer.music.get_volume()
+                )
+                mixer.music.set_volume(mixer.music.get_volume() + 0.05)
             if button_press == char_to_int(' '):
                 if mixer.music.get_busy() and not self.paused:
                     log.debug("Pausing playback at %d", mixer.music.get_pos())
