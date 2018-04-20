@@ -4,7 +4,7 @@ from pygame import mixer
 from magic import detect_from_filename as get_filetype
 
 mixer.init(frequency=44100)
-valid_filetypes = tuple(
+valid_filetypes = (
     "audio/x-wav",
     "audio/x-flac",
     "audio/ogg"
