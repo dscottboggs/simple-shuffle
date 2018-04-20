@@ -1,9 +1,10 @@
+#!/usr/bin/env python3.6
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from magic import detect_from_filename as get_filetype
 
 mixer.init(frequency=44100)
-valid_filetypes = (
+valid_filetypes = tuple(
     "audio/x-wav",
     "audio/x-flac",
     "audio/ogg"
