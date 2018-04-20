@@ -56,21 +56,21 @@ class Shuffler:
     @property
     def future(self):
         try:
-            return self.files[self.index + 1]
+            return self.files[self.index]
         except IndexError:
             return None
 
     @property
     def past(self):
         try:
-            return self.files[self.index - 1]
+            return self.files[self.index - 2]
         except IndexError:
             return None
 
     def previous(self):
         if self.index > 0:
             self.index -= 1
-            return self.files[self.future]
+            return self.future
         else:
             raise StopIteration
 
@@ -78,14 +78,14 @@ class Shuffler:
         """Get the current iteration point, and increment the index."""
         if self.index < len(self.files):
             self.index += 1
-            return self.past
+            return self.current
         else:
             raise StopIteration
 
     @property
     def current(self):
         """Get the current iteration point without updating the index."""
-        return self.files[self.index]
+        return self.files[self.index - 1]
 
 
 class Player():
