@@ -154,7 +154,7 @@ class Player():
 
     def get_tags(self, filename, filetype):
         """Get the tags from an arbitrary file."""
-        if filetype is "audio/x-flac":
+        if filetype == "audio/x-flac":
             return FLAC(filename)
         elif filetype == "audio/ogg":
             return OggFileType(filename)
