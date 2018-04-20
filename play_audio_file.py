@@ -139,19 +139,28 @@ class Player():
         while True:
             button_press = curses.wrapper(self.display, self.song_info)
             # Wraps the "display" function call in a curses window.
+            if button_press == curses.KEY_DOWN:
+                mixer.music.set_volume(mixer.music.get_volume() - 5)
+            if button_press == curses.KEY_UP:
+                mixer.music.set_volume(mixer.music.get_volume() + 5)
             if button_press == char_to_int(' '):
-                if mixer.music.get_busy():
+                if mixer.music.get_busy() and not self.paused:
+                    log.debug("Pausing playback at %d", mixer.music.get_pos())
                     mixer.music.pause()
-                else:
+                    self.paused = True
+                elif self.paused:
+                    log.debug("Resuming playback.")
                     mixer.music.unpause()
+                    self.paused=False
             if button_press == char_to_int('s')\
                     or button_press == char_to_int('q'):
+                log.debug("Stopping and exiting")
                 mixer.music.stop()
                 exit(0)
 
     @staticmethod
     @strict
-    def display(screen, text: str) -> str:
+    def display(screen, text: str) -> int:
         """Display some text centered in the screen."""
         screen.clear()
         for lineno, line in zip(
