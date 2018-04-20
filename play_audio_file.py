@@ -59,7 +59,7 @@ def display_info(filename: str):
     try:
         if environ['BLOCK_INSTANCE'] == 'currently_playing':
             # just print the info.
-            print(get_id3_tags(filename))
+            print(EasyID3(filename))
     except KeyError:
         # launched from term, use curses display
         while True:
