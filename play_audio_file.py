@@ -25,10 +25,11 @@ def get_song_info(filename: str) -> str:
         tags = EasyID3(filename)
     except ID3NoHeaderError:
         return filename.split('/')[-1:]
-    return "%s by %s,\nTrack %s from their album, %s." % (
+    return "%s by %s,\nTrack %d out of %d from their album, %s." % (
         tags['title'][0],
         tags['artist'][0],
-        tags['tracknumber'][0],
+        tags['tracknumber'][0].split('/', maxsplit=1)[0],
+        tags['tracknumber'][0].split('/', maxsplit=1)[1],
         tags['album'][0]
     )
 
