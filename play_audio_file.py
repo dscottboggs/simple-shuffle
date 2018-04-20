@@ -55,11 +55,17 @@ class Shuffler:
 
     @property
     def future(self):
-        return self.files[self.index + 1]
+        try:
+            return self.files[self.index + 1]
+        except IndexError:
+            return None
 
     @property
     def past(self):
-        return self.files[self.index - 1]
+        try:
+            return self.files[self.index - 1]
+        except IndexError:
+            return None
 
     def previous(self):
         if self.index > 0:
