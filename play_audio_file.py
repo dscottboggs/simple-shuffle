@@ -4,7 +4,6 @@ from pygame import mixer
 from magic import detect_from_filename as get_filetype
 from time import sleep
 from os import environ
-from typing import List, Tuple
 from mutagen.easyid3 import EasyID3
 from mutagen.id3._util import ID3NoHeaderError
 import curses
@@ -25,13 +24,22 @@ def get_song_info(filename: str) -> str:
         tags = EasyID3(filename)
     except ID3NoHeaderError:
         return filename.split('/')[-1:]
-    return "%s by %s,\nTrack %d out of %d from their album, %s." % (
-        tags['title'][0],
-        tags['artist'][0],
-        int(tags['tracknumber'][0].split('/', maxsplit=1)[0]),
-        int(tags['tracknumber'][0].split('/', maxsplit=1)[1]),
-        tags['album'][0]
-    )
+    try:
+        return "%s by %s,\nTrack %d out of %d from their album, %s." % (
+            tags['title'][0],
+            tags['artist'][0],
+            int(tags['tracknumber'][0].split('/', maxsplit=1)[0]),
+            int(tags['tracknumber'][0].split('/', maxsplit=1)[1]),
+            tags['album'][0]
+        )
+    except (KeyError, ValueError):
+        try:
+            return "%s by %s" % (tags['title'][0], tags['artist'][0])
+        except (KeyError, ValueError):
+            try:
+                return "%s" % tags['title'][0]
+            except (KeyError, ValueError):
+                return filename.split("/")[-1:]
 
 
 @strict
