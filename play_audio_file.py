@@ -8,6 +8,7 @@ from typing import List, Tuple
 from mutagen.easyid3 import EasyID3
 import curses
 from binascii import unhexlify
+from strict_hint import strict
 
 mixer.init(frequency=44100)
 valid_filetypes = (
@@ -17,16 +18,14 @@ valid_filetypes = (
 )
 
 
+@strict
 def to_char(keycode: int) -> str:
     if keycode > 255 or keycode < 0:
         raise ValueError("Invalid Keycode!")
     return unhexlify(hex(keycode)[-2:]).decode()
 
 
-def get_id3_tags(filename: str) -> List[Tuple]:
-    return EasyID3(filename)
-
-
+@strict
 def play_audio_file(filename: str):
     """Plays an audio file."""
     filetype = get_filetype(filename).mime_type
@@ -41,6 +40,7 @@ def play_audio_file(filename: str):
         )
 
 
+@strict
 def cursesdisplay(screen, text: str) -> str:
     """Display some text centered in the screen."""
     screen.clear()
@@ -53,6 +53,7 @@ def cursesdisplay(screen, text: str) -> str:
     return to_char(screen.getch())
 
 
+@strict
 def display_info(filename: str):
     """Display info about the currently playing audio file."""
     try:
@@ -62,7 +63,7 @@ def display_info(filename: str):
     except KeyError:
         # launched from term, use curses display
         while True:
-            button_press = curses.wrapper(cursesdisplay, get_id3_tags(filename))
+            button_press = curses.wrapper(cursesdisplay, str(EasyID3(filename)))
             if button_press:
                 print(button_press)
                 break
