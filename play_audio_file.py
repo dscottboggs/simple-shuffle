@@ -139,7 +139,7 @@ class Player():
         )
         for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
             text.update({       # self.show requires a function which returns
-                line: {     # the text, so that it can get updates.
+                lambda: line: {     # the text, so that it can get updates.
                     'x': int((maxcolumns - len(line)) / 2),
                     'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
@@ -151,7 +151,7 @@ class Player():
         #     }
         # })
         text.update({
-            "VOL: %f%%" % mixer.music.get_volume() * 100: {
+            lambda: "VOL: %f%%" % mixer.music.get_volume() * 100: {
                 'x': int(maxcolumns - 12),
                 'y': int(maxlines - 1)
             }
@@ -228,14 +228,14 @@ class Player():
         for txt, coords in text(max_cols, max_lines).items():
             log(
                 "Adding string %s\nAt %d columns by %d lines",
-                txt,
+                txt(),
                 coords['x'],
                 coords['y']
             )
             screen.addstr(
                 coords['y'],
                 coords['x'],
-                txt
+                txt()
             )
         screen.refresh()
         return screen.getch()
