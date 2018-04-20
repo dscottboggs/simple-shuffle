@@ -182,8 +182,7 @@ class Player():
             outtxt = "%s by %s,\nTrack %d out of %d from their album, %s." % (
                 tags['title'][0],
                 tags['artist'][0],
-                int(tags['tracknumber'][0].split('/', maxsplit=1)[0]),
-                int(tags['tracknumber'][0].split('/', maxsplit=1)[1]),
+                int(tags['tracknumber'][0]),
                 tags['album'][0]
             )
             log.debug("Song info: %s", outtxt)
