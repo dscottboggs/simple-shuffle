@@ -9,7 +9,7 @@ if len(urls) < 1:
 
 setup(
     name="Simple Shuffle",
-    version="0.0.%d" % len(vcs.iter_commits()),
+    version="0.0.%d" % len([c for c in vcs.iter_commits()]),
     author="D. Scott Boggs",
     author_email="scott@tams.tech",
     description="Shuffles a folder of music. That is all.",
