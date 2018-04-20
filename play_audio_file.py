@@ -75,15 +75,21 @@ def cursesdisplay(screen, text: str) -> str:
             line
         )
     screen.refresh()
-    button_press = to_char(screen.getch())
-    if button_press == ' ':
-        if mixer.music.get_busy():
-            mixer.music.pause()
-        else:
-            mixer.music.unpause()
-    if button_press == 's':
-        mixer.music.stop()
-        return
+    return to_char(screen.getch())
+
+
+@strict
+def controls_wrapper(text_for_display: str) -> None:
+    while True:
+        button_press = curses.wrapper(cursesdisplay, text_for_display)
+        if button_press == ' ':
+            if mixer.music.get_busy():
+                mixer.music.pause()
+            else:
+                mixer.music.unpause()
+        if button_press == 's':
+            mixer.music.stop()
+            break
 
 
 @strict
@@ -95,10 +101,7 @@ def display_info(filename: str):
             print(get_song_info(filename))
     except KeyError:
         # launched from term, use curses display
-        curses.wrapper(
-            cursesdisplay,
-            get_song_info(filename)
-        )
+        controls_wrapper(filename)
 
 
 play_audio_file("/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg")
