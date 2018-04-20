@@ -22,3 +22,5 @@ def play_audio_file(filename: str):
             + " This script can only handle wav, flac, and ogg filetypes, "
             + "due to the underlying library capabilities."
         )
+
+play_audio_file("Music/Moon Hooch/14 Mega Tubes.ogg")
