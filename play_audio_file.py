@@ -6,6 +6,7 @@ from time import sleep
 from os import environ
 from typing import List, Tuple
 from mutagen.easyid3 import EasyID3
+from mutagen.id3._util import ID3NoHeaderError
 import curses
 from binascii import unhexlify
 from strict_hint import strict
@@ -16,6 +17,17 @@ valid_filetypes = (
     "audio/x-flac",
     "audio/ogg"
 )
+
+
+@strict
+def get_song_info(filename: str) -> str:
+    try:
+        tags = EasyID3(filename)
+    except ID3NoHeaderError:
+        return filename.split('/')[-1:]
+    return "%s by %s,\nTrack %s from their album, %s." % (
+        tags['title'], tags['artist'], tags['tracknumber'], tags['album']
+    )
 
 
 @strict
@@ -59,11 +71,14 @@ def display_info(filename: str):
     try:
         if environ['BLOCK_INSTANCE'] == 'currently_playing':
             # just print the info.
-            print(EasyID3(filename))
+            print(get_song_info(filename))
     except KeyError:
         # launched from term, use curses display
         while True:
-            button_press = curses.wrapper(cursesdisplay, str(EasyID3(filename)))
+            button_press = curses.wrapper(
+                cursesdisplay,
+                get_song_info(filename)
+            )
             if button_press:
                 print(button_press)
                 break
