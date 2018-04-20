@@ -161,6 +161,7 @@ class Player():
         else:
             raise NotImplementedError(
                 "The get_tags function can only handle ogg and flac as of yet!"
+                + " Received %s." % filetype
             )
 
     @property
