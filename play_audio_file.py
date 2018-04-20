@@ -91,12 +91,14 @@ class Player():
         self.begin_playback(self.shuffle.current)
         self.show()
 
-    def restart(self):
+    @strict
+    def restart(self) -> str:
         """Restart the currently playing song."""
         mixer.music.set_pos(0)
-        self.begin_playback(self.shuffle.current)
+        return self.shuffle.current
 
-    def previous(self):
+    @strict
+    def previous(self) -> str:
         """Go back to the previous song or restart the current one.
 
         Calls self.restart() if StopIteration is raised.
@@ -110,7 +112,8 @@ class Player():
         except StopIteration:
             return self.restart()
 
-    def skip(self):
+    @strict
+    def skip(self) -> str:
         """Skip to the next file in the shuffler."""
         log.debug(
             "Skip button pressed.\nCurrent file: %s\nNext file:%s",
@@ -120,8 +123,13 @@ class Player():
         try:
             return self.shuffle.next()
         except StopIteration:
-            ...
-            # TODO: handle StopIteration.
+            log.fatal("List of tracks has been exhausted.")
+            exit(0)
+
+    @property
+    @strict
+    def current_file(self) -> str:
+        return self.shuffle.current
 
     @property
     @strict
@@ -273,7 +281,7 @@ class Player():
                 self.begin_playback(self.previous())
             if button_press == curses.KEY_LEFT \
                     and mixer.music.get_pos() > 5000:
-                self.restart()
+                self.begin_playback(self.restart())
             if button_press == char_to_int(' '):
                 if mixer.music.get_busy() and not self.paused:
                     log.debug(
