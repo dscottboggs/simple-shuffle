@@ -1,6 +1,9 @@
 """Trying out the curses module."""
-from curses import wrapper
+import curses
 from binascii import unhexlify
+
+
+outstr = "Hello, world, from curses!"
 
 
 def to_char(keycode: int) -> str:
@@ -11,9 +14,13 @@ def to_char(keycode: int) -> str:
 
 def main(screen):
     screen.clear()
-    screen.addstr("Hello, world, from curses!")
+    screen.addstr(
+        int(curses.LINES/2),
+        int((curses.COLS-len(outstr))/2),
+        outstr
+    )
     screen.refresh()
     return screen.getch()
 
 
-print(to_char(wrapper(main)))
+print(to_char(curses.wrapper(main)))
