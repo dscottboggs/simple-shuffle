@@ -166,7 +166,9 @@ class Player():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
-            button_press = curses.wrapper(self.display, self.displayed_text)
+            button_press = curses.wrapper(
+                self.display, self.displayed_text, log
+            )
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
                 log.debug(
@@ -199,7 +201,7 @@ class Player():
                 exit(0)
 
     @staticmethod
-    def display(screen, text: Callable) -> int:
+    def display(screen, text: Callable, logger) -> int:
         """Display some text in ncurses.
 
         This is essentially a wrapper around stdscr.addstr and stdscr.getch.
@@ -211,7 +213,14 @@ class Player():
         """
         screen.clear()
         max_lines, max_cols = screen.getmaxyx()
+        logger.debug("Max width: %d\nMax height:%d", max_cols, max_lines)
         for txt, coords in text(max_cols, max_lines).items():
+            logger.debug(
+                "Adding string %s\nAt %d columns by %d lines",
+                txt(),
+                coords['x'],
+                coords['y']
+            )
             screen.addstr(
                 coords['y'],
                 coords['x'],
