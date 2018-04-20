@@ -46,7 +46,8 @@ def list_recursively(f: str, *filepath) -> list:
 class Shuffler:
     """Get all of the files in the folder, in a shuffled order."""
     def __init__(self, folder):
-        self.files = shuffle(list_recursively(folder))
+        self.files = list_recursively(folder)
+        shuffle(self.files)
         self.index = 0
 
     def __iter__(self):
