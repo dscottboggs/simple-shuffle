@@ -45,3 +45,4 @@ class Config():
     dictConfig(get_logging_config())
     logger = getLogger()
     curses_logfile = "/home/scott/Documents/code/simple-shuffle/curses_logfile.txt"
+    display_refresh_delay = 2
