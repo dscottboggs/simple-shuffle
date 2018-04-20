@@ -242,8 +242,8 @@ class Player():
             })
         text.update({     # I'll come back to this
             str(float(mixer.music.get_pos()/100)) + " seconds": {
-                'x': maxcolumns/3,
-                'y': maxlines - 1
+                'x': int(maxcolumns)/3,
+                'y': int(maxlines) - 1
             }
         })
         text.update({
