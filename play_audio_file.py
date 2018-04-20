@@ -28,8 +28,8 @@ def get_song_info(filename: str) -> str:
     return "%s by %s,\nTrack %d out of %d from their album, %s." % (
         tags['title'][0],
         tags['artist'][0],
-        tags['tracknumber'][0].split('/', maxsplit=1)[0],
-        tags['tracknumber'][0].split('/', maxsplit=1)[1],
+        int(tags['tracknumber'][0].split('/', maxsplit=1)[0]),
+        int(tags['tracknumber'][0].split('/', maxsplit=1)[1]),
         tags['album'][0]
     )
 
