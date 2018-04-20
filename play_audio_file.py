@@ -134,14 +134,14 @@ class Player():
     def displayed_text(self, maxcolumns, maxlines) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
-        song_txt_list = wrap(               # wrap the text to be one-third of
-            self.song_info, maxcolumns/3   # the width of the window.
+        song_txt_list = wrap(                   # wrap the text to be one-third
+            self.song_info, int(maxcolumns/3)   # of the width of the window.
         )
         for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
             text.update({       # self.show requires a function which returns
                 lambda: line: {     # the text, so that it can get updates.
-                    'x': (maxcolumns - len(line)) / 2,
-                    'y': (maxlines-len(song_txt_list)) / 2 + lineno
+                    'x': int((maxcolumns - len(line)) / 2),
+                    'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
             })
         # text.update({     # I'll come back to this
@@ -152,8 +152,8 @@ class Player():
         # })
         text.update({
             lambda: "VOL: %f%%" % mixer.get_volume() * 100: {
-                'x': maxcolumns - 12,
-                'y': maxlines - 1
+                'x': int(maxcolumns - 12),
+                'y': int(maxlines - 1)
             }
         })
         return text
