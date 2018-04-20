@@ -20,7 +20,11 @@ def main(screen):
         outstr
     )
     screen.refresh()
-    return screen.getch()
+    ch1 = screen.getch()
+    screen.nodelay(True)
+    ch2 = screen.getch()
+    screen.nodelay(False)
+    return str(ch1) + ' ' + str(ch2)
 
 
-print(to_char(curses.wrapper(main)))
+print(curses.wrapper(main))
