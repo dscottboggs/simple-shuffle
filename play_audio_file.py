@@ -57,14 +57,17 @@ def cursesdisplay(screen, text: str) -> str:
 
 def display_info(filename: str):
     """Display info about the currently playing audio file."""
-    if environ['BLOCK_INSTANCE'] == 'currently_playing':
-        # just print the info.
-        print(get_id3_tags(filename))
-    while True:
-        button_press = curses.wrapper(cursesdisplay, get_id3_tags(filename))
-        if button_press:
-            print(button_press)
-            break
+    try:
+        if environ['BLOCK_INSTANCE'] == 'currently_playing':
+            # just print the info.
+            print(get_id3_tags(filename))
+    except KeyError:
+        # launched from term, use curses display
+        while True:
+            button_press = curses.wrapper(cursesdisplay, get_id3_tags(filename))
+            if button_press:
+                print(button_press)
+                break
 
 
 play_audio_file(test_filename)
