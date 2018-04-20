@@ -185,20 +185,20 @@ class Player():
                 int(tags['tracknumber'][0]),
                 tags['album'][0]
             )
-            log.debug("Song info: %s", outtxt)
+            self.curses_logger("Song info: %s", outtxt)
             return outtxt
         except (KeyError, ValueError):
             try:
                 # Perhaps the tracknumber or album tags are missing, try
                 # displaying just the song title and the artist
                 outtxt = "%s by %s" % (tags['title'][0], tags['artist'][0])
-                log.debug("Song info: %s", outtxt)
+                self.curses_logger("Song info: %s", outtxt)
                 return outtxt
             except (KeyError, ValueError):
                 try:
                     # perhaps there's still a title tag, try displaying that.
                     outtxt = tags['title'][0]
-                    log.debug("Song info: %s", outtxt)
+                    self.curses_logger("Song info: %s", outtxt)
                     return outtxt
                 except (KeyError, ValueError):
                     # Just return the filename...
@@ -206,12 +206,12 @@ class Player():
                         outtxt = basename(
                             self.current_file
                         ).rsplit('.', maxsplit=1)[1]
-                        log.debug("Song info: %s", outtxt)
+                        self.curses_logger("Song info: %s", outtxt)
                         return outtxt
                     except IndexError:
                         # the filename has no extension to trim
                         outtxt = basename(self.current_file)
-                        log.debug("Song info: %s", outtxt)
+                        self.curses_logger("Song info: %s", outtxt)
                         return outtxt
 
     @strict
@@ -315,17 +315,6 @@ class Player():
                 y: y coord
             }
         """
-        def log(text, *fstrings):
-            """Function compatible with logger.funcs to write to a file.
-
-            You can't display shit when curses is active.
-            """
-            if fstrings:
-                with open(Config.curses_logfile, 'a') as logfile:
-                    logfile.write(text % fstrings + '\n')
-            else:
-                with open(Config.curses_logfile, 'a') as logfile:
-                    logfile.write(text + '\n')
         screen.clear()
         log(
             " ------- Entering curses mode @ %s -------- ",
@@ -347,6 +336,20 @@ class Player():
             )
         screen.refresh()
         return screen.getch()
+
+    @staticmethod
+    @strict
+    def curses_log(text: str, *fstrings):
+        """Function compatible with logger.funcs to write to a file.
+
+        You can't display shit when curses is active.
+        """
+        if fstrings:
+            with open(Config.curses_logfile, 'a') as logfile:
+                logfile.write(text % fstrings + '\n')
+        else:
+            with open(Config.curses_logfile, 'a') as logfile:
+                logfile.write(text + '\n')
 
 
 def char_to_int(char: str) -> int:
