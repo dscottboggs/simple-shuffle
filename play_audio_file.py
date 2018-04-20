@@ -11,6 +11,8 @@ from mutagen.id3._util import ID3NoHeaderError
 import curses
 from binascii import hexlify
 from strict_hint import strict
+from typing import Dict
+from textwrap import wrap
 from config import Config
 
 log = Config.logger
@@ -128,6 +130,27 @@ class Player():
                 + "due to the underlying library capabilities."
             )
 
+    @property
+    def displayed_text(self) -> Dict[str, Dict[str, int]]:
+        """Retrieve the text to display and where to display it."""
+        text = {}
+        song_txt_list = wrap(               # wrap the text to be one-third of
+            self.song_info, curses.COLS/3   # the width of the window.
+        )
+        for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
+            text.update({       # self.show requires a function which returns
+                lambda: line: {     # the text, so that it can get updates.
+                    'x': (curses.COLS - len(line)) / 2,
+                    'y': (curses.LINES-len(song_txt_list)) / 2 + lineno
+                }
+            })
+        text.update({
+            lambda: float(mixer.music.get_pos()/100) + " seconds": {
+                'x': curses.COLS/3,
+                'y': curses.LINES - 1
+            }
+        })
+
     def show(self):
         """Loop curses display and keycode watching.
 
@@ -136,7 +159,7 @@ class Player():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
-            button_press = curses.wrapper(self.display, self.song_info)
+            button_press = curses.wrapper(self.display, self.displayed_text())
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
                 log.debug(
@@ -166,18 +189,22 @@ class Player():
                 exit(0)
 
     @staticmethod
-    @strict
-    def display(screen, text: str) -> int:
-        """Display some text centered in the screen."""
+    def display(screen, text) -> int:
+        """Display some text in ncurses.
+
+        This is essentially a wrapper around stdscr.addstr and stdscr.getch.
+        The text must be received in the following format:
+            function which returns text to be displayed: {
+                x: x coord
+                y: y coord
+            }
+        """
         screen.clear()
-        for lineno, line in zip(
-                    range(len(text.split('\n'))),
-                    text.split('\n')
-                ):
+        for txt, coords in text.items():
             screen.addstr(
-                int((curses.LINES - len(text.split('\n'))) / 2) + lineno,
-                int((curses.COLS-len(line))/2),
-                line
+                coords['y'],
+                coords['x'],
+                txt()
             )
         screen.refresh()
         return screen.getch()
@@ -197,6 +224,6 @@ def char_to_int(char: str) -> int:
             )
         ), 16
     )
- 
+
 
 Player("/home/scott/Music")
