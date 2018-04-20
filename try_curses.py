@@ -19,7 +19,7 @@ def main(screen):
         int((curses.COLS-len(outstr))/2),
         outstr
     )
-    screen.halfdelay(10)
+    curses.halfdelay(10)
     return screen.getch()
 
 
