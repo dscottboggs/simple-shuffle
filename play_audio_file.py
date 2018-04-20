@@ -13,6 +13,7 @@ from binascii import hexlify
 from strict_hint import strict
 from typing import Dict, Callable
 from textwrap import wrap
+from datetime import datetime
 from config import Config
 
 log = Config.logger
@@ -152,7 +153,7 @@ class Player():
         # })
         text.update({
             lambda: "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
-                'x': int(maxcolumns - 15),
+                'x': int(maxcolumns - 17),
                 'y': int(maxlines - 1)
             }
         })
@@ -223,6 +224,10 @@ class Player():
                 with open(Config.curses_logfile, 'a') as logfile:
                     logfile.write(text + '\n')
         screen.clear()
+        log(
+            " ------- Entering curses mode @ %s -------- ",
+            datetime.now().isoformat()
+        )
         max_lines, max_cols = screen.getmaxyx()
         log("Max width: %d\nMax height:%d", max_cols, max_lines)
         for txt, coords in text(max_cols, max_lines).items():
