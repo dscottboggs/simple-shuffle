@@ -263,7 +263,7 @@ class Player():
         """
         while True:
             button_press = curses.wrapper(
-                self.display, self.displayed_text, log
+                self.display, self.displayed_text, self.curses_logger
             )
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
@@ -316,14 +316,14 @@ class Player():
             }
         """
         screen.clear()
-        log(
+        logger(
             " ------- Entering curses mode @ %s -------- ",
             datetime.now().isoformat()
         )
         max_lines, max_cols = screen.getmaxyx()
-        log("Max width: %d\nMax height:%d", max_cols, max_lines)
+        logger("Max width: %d\nMax height:%d", max_cols, max_lines)
         for txt, coords in text(max_cols, max_lines).items():
-            log(
+            logger(
                 "Adding string %s\nAt %d columns by %d lines",
                 txt(),
                 coords['x'],
@@ -339,7 +339,7 @@ class Player():
 
     @staticmethod
     @strict
-    def curses_log(text: str, *fstrings):
+    def curses_logger(text: str, *fstrings):
         """Function compatible with logger.funcs to write to a file.
 
         You can't display shit when curses is active.
