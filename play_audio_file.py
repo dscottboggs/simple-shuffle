@@ -209,7 +209,7 @@ class Player():
             }
         """
         screen.clear()
-        for txt, coords in text().items():
+        for txt, coords in text(screen).items():
             screen.addstr(
                 coords['y'],
                 coords['x'],
