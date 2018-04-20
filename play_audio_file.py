@@ -209,7 +209,7 @@ class Player():
             }
         """
         screen.clear()
-        screen.addstr(str(screen.getyx()))
+        screen.addstr(str(screen.getmaxyx()))
         screen.refresh()
         screen.getch()
         screen.clear()
