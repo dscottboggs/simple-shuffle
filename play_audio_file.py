@@ -10,6 +10,7 @@ import curses
 from binascii import unhexlify
 
 
+test_filename = "/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg"
 mixer.init(frequency=44100)
 valid_filetypes = (
     "audio/x-wav",
@@ -66,6 +67,7 @@ def display_info(filename: str):
             break
 
 
-play_audio_file("/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg")
+play_audio_file(test_filename)
+display_info(test_filename)
 sleep(5)
 mixer.music.stop()
