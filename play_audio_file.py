@@ -209,7 +209,7 @@ class Player():
             }
         """
         screen.clear()
-        max_lines, max_cols = screen.getmaxxy()
+        max_lines, max_cols = screen.getmaxyx()
         for txt, coords in text(max_cols, max_lines).items():
             screen.addstr(
                 coords['y'],
