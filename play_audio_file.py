@@ -262,7 +262,6 @@ class Player():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
-            curses.halfdelay(Config.display_refresh_delay)
             button_press = curses.wrapper(
                 self.display, self.displayed_text, self.curses_logger
             )
@@ -316,6 +315,7 @@ class Player():
                 y: y coord
             }
         """
+        curses.halfdelay(Config.display_refresh_delay)
         screen.clear()
         logger(
             " ------- Entering curses mode @ %s -------- ",
