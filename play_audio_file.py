@@ -7,10 +7,8 @@ from os import access, walk
 from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
-from mustagen.flac import FLAC
+from mutagen.flac import FLAC
 from mutagen.ogg import OggFileType
-from mutagen.easyid3 import EasyID3
-from mutagen.id3._util import ID3NoHeaderError
 import curses
 from binascii import hexlify
 from strict_hint import strict
