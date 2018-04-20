@@ -11,7 +11,7 @@ from mutagen.id3._util import ID3NoHeaderError
 import curses
 from binascii import hexlify
 from strict_hint import strict
-from typing import Dict
+from typing import Dict, Callable
 from textwrap import wrap
 from config import Config
 
@@ -198,7 +198,8 @@ class Player():
                 exit(0)
 
     @staticmethod
-    def display(screen, text) -> int:
+    @strict
+    def display(screen, text: Callable) -> int:
         """Display some text in ncurses.
 
         This is essentially a wrapper around stdscr.addstr and stdscr.getch.
@@ -209,7 +210,7 @@ class Player():
             }
         """
         screen.clear()
-        for txt, coords in text.items():
+        for txt, coords in text().items():
             screen.addstr(
                 coords['y'],
                 coords['x'],
