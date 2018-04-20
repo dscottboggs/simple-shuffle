@@ -179,7 +179,7 @@ class Player():
         outtxt: str = ''
         try:
             # the default output
-            outtxt = "%s by %s,\nTrack %d from their album, %s." % (
+            outtxt = "%s by %s,nTrack %d from their album, %s." % (
                 tags['title'][0],
                 tags['artist'][0],
                 int(tags['tracknumber'][0]),
@@ -233,10 +233,10 @@ class Player():
         song_txt_list = wrap(                   # wrap the text to be one-third
             self.song_info, int(maxcolumns/3)   # of the width of the window.
         )
-        for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
+        for lineno in range(len(song_txt_list)):
             text.update({       # self.show requires a function which returns
-                lambda: line: {     # the text, so that it can get updates.
-                    'x': int((maxcolumns - len(line)) / 2),
+                lambda: song_txt_list[lineno]: {     # the text, so that it can get updates.
+                    'x': int((maxcolumns - len(song_txt_list[lineno])) / 2),
                     'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
             })
