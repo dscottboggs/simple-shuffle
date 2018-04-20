@@ -23,4 +23,4 @@ def play_audio_file(filename: str):
             + "due to the underlying library capabilities."
         )
 
-play_audio_file("Music/Moon Hooch/14 Mega Tubes.ogg")
+play_audio_file("/home/scott/Music/Moon Hooch/14 Mega Tubes.ogg")
