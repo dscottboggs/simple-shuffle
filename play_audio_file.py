@@ -131,29 +131,29 @@ class Player():
             )
 
     @strict
-    def displayed_text(self, screen) -> Dict[str, Dict[str, int]]:
+    def displayed_text(self, maxcolumns, maxlines) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
         song_txt_list = wrap(               # wrap the text to be one-third of
-            self.song_info, screen.COLS/3   # the width of the window.
+            self.song_info, maxcolumns/3   # the width of the window.
         )
         for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
             text.update({       # self.show requires a function which returns
                 lambda: line: {     # the text, so that it can get updates.
-                    'x': (screen.COLS - len(line)) / 2,
-                    'y': (screen.LINES-len(song_txt_list)) / 2 + lineno
+                    'x': (maxcolumns - len(line)) / 2,
+                    'y': (maxlines-len(song_txt_list)) / 2 + lineno
                 }
             })
         # text.update({     # I'll come back to this
         #     lambda: float(mixer.music.get_pos()/100) + " seconds": {
-        #         'x': screen.COLS/3,
-        #         'y': screen.LINES - 1
+        #         'x': maxcolumns/3,
+        #         'y': maxlines - 1
         #     }
         # })
         text.update({
             lambda: "VOL: %f%%" % mixer.get_volume() * 100: {
-                'x': screen.COLS - 12,
-                'y': screen.LINES - 1
+                'x': maxcolumns - 12,
+                'y': maxlines - 1
             }
         })
 
@@ -209,11 +209,8 @@ class Player():
             }
         """
         screen.clear()
-        screen.addstr(str(screen.getmaxyx()))
-        screen.refresh()
-        screen.getch()
-        screen.clear()
-        for txt, coords in text(screen).items():
+        max_lines, max_cols = screen.getmaxxy()
+        for txt, coords in text(max_cols, max_lines).items():
             screen.addstr(
                 coords['y'],
                 coords['x'],
