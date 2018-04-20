@@ -130,24 +130,30 @@ class Player():
                 + "due to the underlying library capabilities."
             )
 
-    @property
-    def displayed_text(self) -> Dict[str, Dict[str, int]]:
+    @strict
+    def displayed_text(self, screen) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
         song_txt_list = wrap(               # wrap the text to be one-third of
-            self.song_info, curses.COLS/3   # the width of the window.
+            self.song_info, screen.COLS/3   # the width of the window.
         )
         for lineno, line in zip(range(len(song_txt_list)), song_txt_list):
             text.update({       # self.show requires a function which returns
                 lambda: line: {     # the text, so that it can get updates.
-                    'x': (curses.COLS - len(line)) / 2,
-                    'y': (curses.LINES-len(song_txt_list)) / 2 + lineno
+                    'x': (screen.COLS - len(line)) / 2,
+                    'y': (screen.LINES-len(song_txt_list)) / 2 + lineno
                 }
             })
+        # text.update({     # I'll come back to this
+        #     lambda: float(mixer.music.get_pos()/100) + " seconds": {
+        #         'x': screen.COLS/3,
+        #         'y': screen.LINES - 1
+        #     }
+        # })
         text.update({
-            lambda: float(mixer.music.get_pos()/100) + " seconds": {
-                'x': curses.COLS/3,
-                'y': curses.LINES - 1
+            lambda: "VOL: %f%%" % mixer.get_volume() * 100: {
+                'x': screen.COLS - 12,
+                'y': screen.LINES - 1
             }
         })
 
@@ -159,7 +165,7 @@ class Player():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
-            button_press = curses.wrapper(self.display, self.displayed_text())
+            button_press = curses.wrapper(self.display, self.displayed_text)
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
                 log.debug(
@@ -175,13 +181,16 @@ class Player():
                 mixer.music.set_volume(mixer.music.get_volume() + 0.05)
             if button_press == char_to_int(' '):
                 if mixer.music.get_busy() and not self.paused:
-                    log.debug("Pausing playback at %d", mixer.music.get_pos())
+                    log.debug(
+                        "Pausing playback at %d",
+                        mixer.music.get_pos() / 100
+                    )
                     mixer.music.pause()
                     self.paused = True
                 elif self.paused:
                     log.debug("Resuming playback.")
                     mixer.music.unpause()
-                    self.paused=False
+                    self.paused = False
             if button_press == char_to_int('s')\
                     or button_press == char_to_int('q'):
                 log.debug("Stopping and exiting")
