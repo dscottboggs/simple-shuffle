@@ -70,7 +70,7 @@ def cursesdisplay(screen, text: str) -> str:
     screen.clear()
     for lineno, line in zip(range(len(text.split('\n'))), text.split('\n')):
         screen.addstr(
-            int((curses.LINES - len(text.split('\n'))) / 2),
+            int((curses.LINES - len(text.split('\n'))) / 2) + lineno,
             int((curses.COLS-len(text))/2),
             line
         )
