@@ -7,6 +7,8 @@ from os import access, walk
 from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
+from mustagen.flac import FLAC
+from mutagen.ogg import OggFileType
 from mutagen.easyid3 import EasyID3
 from mutagen.id3._util import ID3NoHeaderError
 import curses
@@ -21,7 +23,6 @@ from config import Config
 log = Config.logger
 mixer.init(frequency=44100)
 valid_filetypes = (
-    "audio/x-wav",
     "audio/x-flac",
     "audio/ogg"
 )
@@ -153,6 +154,17 @@ class Player():
         else:
             raise ValueError("%s is not accessible!" % folder)
 
+    def get_tags(self, filename, filetype):
+        """Get the tags from an arbitrary file."""
+        if filetype is "audio/x-flac":
+            return FLAC(filename)
+        elif filetype == "audio/ogg":
+            return OggFileType(filename)
+        else:
+            raise NotImplementedError(
+                "The get_tags function can only handle ogg and flac as of yet!"
+            )
+
     @property
     @strict
     def song_info(self) -> str:
@@ -161,23 +173,11 @@ class Player():
         Makes several attempts at picking fewer tags before finally displaying
         the filename as a fallback.
         """
+        tags = self.get_tags(
+            self.current_file,
+            get_filetype(self.current_file).mime_type
+        )
         outtxt: str = ''
-        try:
-            tags = EasyID3(self.current_file)
-        except ID3NoHeaderError:
-            # This is raised if there is absolutely no ID3 information in
-            # the file
-            try:
-                outtxt = basename(
-                    self.current_file
-                ).rsplit('.', maxsplit=1)[0]
-                log.debug("Song info: %s", outtxt)
-                return outtxt
-            except IndexError:
-                # the filename has no extension to trim
-                outtxt = basename(self.current_file)
-                log.debug("Song info: %s", outtxt)
-                return outtxt
         try:
             # the default output
             outtxt = "%s by %s,\nTrack %d out of %d from their album, %s." % (
