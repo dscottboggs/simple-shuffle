@@ -233,12 +233,13 @@ class Player():
         song_txt_list = wrap(                   # wrap the text to be one-third
             self.song_info, int(maxcolumns/3)   # of the width of the window.
         )
-        text.update({{       # self.show requires a function which returns
-            lambda: song_txt_list[lineno]: {     # the text, so that it can get updates.
-                'x': int((maxcolumns - len(song_txt_list[lineno])) / 2),
-                'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
-            }
-        } for lineno in range(len(song_txt_list))})
+        for lineno in range(len(song_txt_list)):
+            text.update({       # self.show requires a function which returns
+                song_txt_list[lineno]: {     # the text, so that it can get updates.
+                    'x': int((maxcolumns - len(song_txt_list[lineno])) / 2),
+                    'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
+                }
+            })
         # text.update({     # I'll come back to this
         #     lambda: float(mixer.music.get_pos()/100) + " seconds": {
         #         'x': maxcolumns/3,
@@ -246,7 +247,7 @@ class Player():
         #     }
         # })
         text.update({
-            lambda: "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
+            "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
                 'x': int(maxcolumns - 17),
                 'y': int(maxlines - 1)
             }
