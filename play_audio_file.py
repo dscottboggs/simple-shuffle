@@ -262,6 +262,8 @@ class Player():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
+            if mixer.music.get_pos() == -1:
+                self.begin_playback(self.skip())
             button_press = curses.wrapper(
                 self.display, self.displayed_text, self.curses_logger
             )
