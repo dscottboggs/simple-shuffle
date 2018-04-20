@@ -130,6 +130,7 @@ class Player():
                 + "due to the underlying library capabilities."
             )
 
+    @strict
     def displayed_text(self, screen) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
@@ -197,7 +198,6 @@ class Player():
                 exit(0)
 
     @staticmethod
-    @strict
     def display(screen, text: Callable) -> int:
         """Display some text in ncurses.
 
