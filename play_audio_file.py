@@ -3,8 +3,9 @@
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from magic import detect_from_filename as get_filetype
-from os import access
+from os import access, walk
 from os.path import isdir, basename
+from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from mutagen.easyid3 import EasyID3
 from mutagen.id3._util import ID3NoHeaderError
@@ -14,6 +15,7 @@ from strict_hint import strict
 from typing import Dict, Callable
 from textwrap import wrap
 from datetime import datetime
+from random import shuffle
 from config import Config
 
 log = Config.logger
@@ -25,14 +27,100 @@ valid_filetypes = (
 )
 
 
+@strict
+def list_recursively(f: str, *filepath) -> list:
+    """Get a list of all files in a folder and its subfolders.
+
+    :return: list: Absolute paths of all files in the folder.
+    """
+    if not isdir(getpath(f, *filepath)):
+        # If the specified file isn't a directory, just return that one file.
+        return [getpath(f, *filepath)]
+    return [
+        getpath(dp, f) for dp, dn, fn in walk(
+            getpath(f, *filepath)
+        ) for f in fn
+    ]
+
+
+class Shuffler:
+    """Get all of the files in the folder, in a shuffled order."""
+    def __init__(self, folder):
+        self.files = shuffle(list_recursively(folder))
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    @property
+    def future(self):
+        return self.files[self.index + 1]
+
+    @property
+    def past(self):
+        return self.files[self.index - 1]
+
+    def previous(self):
+        if self.index > 0:
+            self.index -= 1
+            return self.files[self.future]
+        else:
+            raise StopIteration
+
+    def next(self):
+        """Get the current iteration point, and increment the index."""
+        if self.index < len(self.files):
+            self.index += 1
+            return self.past
+        else:
+            raise StopIteration
+
+    @property
+    def current(self):
+        """Get the current iteration point without updating the index."""
+        return self.files[self.index]
+
+
 class Player():
     """An object containing the actual player."""
     def __init__(self, folder: str):
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
-        self.current_file = "/home/scott/Music/Audioslave - Shadow On The Sun.flac"
+        self.shuffle = Shuffler(self.shuffle_folder)
         self.begin_playback()
         self.show()
+
+    def restart(self):
+        """Restart the currently playing song."""
+        mixer.music.set_pos(0)
+        self.begin_playback(self.shuffle.current)
+
+    def previous(self):
+        """Go back to the previous song or restart the current one.
+
+        Calls self.restart() if StopIteration is raised.
+        """
+        log.debug(
+            "Skip-backwards button pressed.\nCurrent file: %s"
+            + "\tCurrent Index:%d"
+        )
+        try:
+            return self.shuffle.previous()
+        except StopIteration:
+            return self.restart()
+
+    def skip(self):
+        """Skip to the next file in the shuffler."""
+        log.debug(
+            "Skip button pressed.\nCurrent file: %s\nNext file:%s",
+            self.shuffle.current,
+            self.shuffle.future
+        )
+        try:
+            return self.shuffle.next()
+        except StopIteration:
+            ...
+            # TODO: handle StopIteration.
 
     @property
     @strict
@@ -114,22 +202,16 @@ class Player():
                         return outtxt
 
     @strict
-    def begin_playback(self):
+    def begin_playback(self, audio_file: str) -> None:
         """Play an audio file."""
-        filetype = get_filetype(self.current_file).mime_type
+        filetype = get_filetype(audio_file).mime_type
         if filetype in valid_filetypes:
-            log.debug("Beginning playback of %s", self.current_file)
-            mixer.music.load(self.current_file)
+            log.debug("Beginning playback of %s", audio_file)
+            mixer.music.load(audio_file)
             mixer.music.play()
             self.paused = False
         else:
-            raise ValueError(
-                "Filetype %s of audio file %s isn't playable." % (
-                    filetype, self.current_file
-                )
-                + " This script can only handle wav, flac, and ogg filetypes, "
-                + "due to the underlying library capabilities."
-            )
+            self.begin_playback(self.skip())
 
     @strict
     def displayed_text(self, maxcolumns, maxlines) -> Dict[str, Dict[str, int]]:
@@ -183,6 +265,14 @@ class Player():
                     mixer.music.get_volume()
                 )
                 mixer.music.set_volume(mixer.music.get_volume() + 0.05)
+            if button_press == curses.KEY_RIGHT:
+                self.begin_playback(self.skip())
+            if button_press == curses.KEY_LEFT \
+                    and mixer.music.get_pos() <= 5000:
+                self.begin_playback(self.previous())
+            if button_press == curses.KEY_LEFT \
+                    and mixer.music.get_pos() > 5000:
+                self.restart()
             if button_press == char_to_int(' '):
                 if mixer.music.get_busy() and not self.paused:
                     log.debug(
