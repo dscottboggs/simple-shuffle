@@ -117,6 +117,53 @@ class Shuffler:
         return self.files[self.index - 1]
 
 
+class PlayingFile:
+    """Methods and data for the currently playing file"""
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    @property
+    def tags(self):
+        """Return TinyTag or mutagen metatags for this file."""
+        if not self._tags:
+            try:
+                self._tags = self.get_tiny_tags()
+            except TinyTagException:
+                self._tags = self.get_mutagen_tags()
+                if not self._tags:
+                    return get_filename(self.filepath)
+        return self._tags
+
+    @strict
+    def get_tiny_tags(self):
+        """Alias for TinyTag.get()"""
+        return TinyTag.get(self.filepath)
+
+    @strict
+    def get_mutagen_tags(self) -> str:
+        """Return appropriatly formatted metatags from the current file.
+
+        TODO tags from mutagen as a fallback for when TinyTag fails.
+
+        Example file: /home/scott/Music/DJ Shadow/(1998) Entroducing/07 - untitled.flac
+
+        """
+        return get_filename(self.current_file.filepath)
+
+    @property
+    def sample_rate(self):
+        """Attempt to retrieve the sample rate.
+
+        In the case that the attempt fails, raise ValueError.
+        """
+        try:
+            return self.get_tiny_tags().samplerate
+        except TinyTagException:
+            raise ValueError(
+                f"Unable to determine sample rate for {self.filepath}"
+            )
+
+
 class Player():
     """An object containing the actual player."""
     @strict
@@ -166,7 +213,13 @@ class Player():
     @property
     @strict
     def current_file(self) -> str:
-        return self.shuffle.current
+        try:
+            if self._current_file.filepath == self.shuffle.current:
+                return self._current_file
+            self._current_file = PlayingFile(self.shuffle.current)
+        except AttributeError:  # the first time there won't be a _current_file
+            self._current_file = PlayingFile(self.shuffle.current)
+        return self._current_file
 
     @property
     @strict
@@ -184,24 +237,6 @@ class Player():
         else:
             raise ValueError("%s is not accessible!" % folder)
 
-    def get_tags(self, filename):
-        """Get the tags from an arbitrary file.
-
-        Alias for TinyTag.get.
-        """
-        return TinyTag.get(filename)
-
-    @strict
-    def get_mutagen_tags(self) -> str:
-        """Return appropriatly formatted metatags from the current file.
-
-        TODO tags from mutagen as a fallback for when TinyTag fails.
-
-        Example file: /home/scott/Music/DJ Shadow/(1998) Entroducing/07 - untitled.flac
-
-        """
-        return get_filename(self.current_file)
-
     @property
     @strict
     def song_info(self) -> str:
@@ -211,39 +246,36 @@ class Player():
         the filename as a fallback.
         """
         outtxt: str = ''
-        try:
-            tags = self.get_tags(
-                self.current_file
-            )
-        except TinyTagException:
-            self.curses_logger(f"TinyTag failed to parse {self.current_file}")
-            return get_mutagen_tags(self.current_file)
-        if tags.title is None:
-            get_filename(self.current_file)
+        if self.current_file.tags.title is None:
+            get_filename(self.current_file.filepath)
         else:
-            if tags.track is None or tags.album is None:
+            if self.current_file.tags.track is None\
+                    or self.current_file.tags.album is None:
                 try:
                     # Perhaps the tracknumber or album tags are missing, try
                     # displaying just the song title and the artist
-                    outtxt = f"{tags.title} by {tags.artist}"
+                    outtxt = "%s by %s" % (
+                        self.current_file.tags.artist,
+                        self.current_file.tags.title
+                    )
                     self.curses_logger("Song info: %s", outtxt)
                     return outtxt
                 except (KeyError, ValueError):
                     try:
                         # perhaps there's still a title tag, try just that.
-                        outtxt = tags.title
+                        outtxt = self.current_file.tags.title
                         self.curses_logger("Song info: %s", outtxt)
                         return outtxt
                     except (KeyError, ValueError):
                         # Just return the filename...
-                        get_filename(self.current_file)
+                        get_filename(self.current_file.filepath)
             else:
                 # the default output
                 outtxt = "%s by %s, track %s from the album %s." % (
-                    tags.title,
-                    tags.artist,
+                    self.current_file.tags.title,
+                    self.current_file.tags.artist,
                     get_track_number(tags),
-                    tags.album
+                    self.current_file.tags.album
                 )
                 self.curses_logger("Song info: %s", outtxt)
                 return outtxt
@@ -251,9 +283,17 @@ class Player():
     @strict
     def begin_playback(self) -> None:
         """Play an audio file."""
+        mixer.quit()
         try:
-            log.debug(f"Attempting to begin playback of {self.current_file}")
-            mixer.music.load(self.current_file)
+            mixer.init(self.current_file.sample_rate)
+        except ValueError:
+            self.skip()
+            self.begin_playback()
+        try:
+            log.debug(
+                f"Attempting to begin playback of {self.current_file.filepath}"
+            )
+            mixer.music.load(self.current_file.filepath)
             mixer.music.play()
             self.paused = False
         except PyGameError:
@@ -349,6 +389,7 @@ class Player():
                     or button_press == char_to_int('q'):
                 log.debug("Stopping and exiting")
                 mixer.music.stop()
+                mixer.quit()
                 exit(0)
 
     @staticmethod
@@ -409,15 +450,11 @@ def get_track_number(tags: TinyTag) -> str:
 def get_filename(filepath: str) -> str:
     """Get the filename without its path or extension."""
     try:
-        outtxt = basename(
-            self.current_file
-        ).rsplit('.', maxsplit=1)[0]
-        self.curses_logger("Song info: %s", outtxt)
+        outtxt = basename(filepath).rsplit('.', maxsplit=1)[0]
         return outtxt
     except IndexError:
         # the filename has no extension to trim
-        outtxt = basename(self.current_file)
-        self.curses_logger("Song info: %s", outtxt)
+        outtxt = basename(filepath)
         return outtxt
 
 
