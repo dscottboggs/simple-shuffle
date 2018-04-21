@@ -1,1 +1,5 @@
 __pycache__/
+Simple_Shuffle.egg-info/
+dist/
+build/
+curses_logfile.txt
