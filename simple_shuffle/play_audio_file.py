@@ -228,6 +228,7 @@ class Player:
             if exists(Config.socket_file_location):
                 raise
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.setopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(Config.socket_file_location)
         self.sock.listen(1)
         self.sock.setblocking(False)
