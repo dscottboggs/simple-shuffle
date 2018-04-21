@@ -1,6 +1,9 @@
 """Configuration and logging for the project."""
 from logging import getLogger, DEBUG
 from logging.config import dictConfig
+from os import sep as root
+import os
+import socket
 
 
 def get_logging_config():
@@ -40,10 +43,32 @@ def get_logging_config():
         }
 
 
-class Config():
+socket_file_location = os.path.join(root, "tmp", "simple_shuffle.sock")
+
+
+class Config:
     """Configuration and logging for the project."""
     dictConfig(get_logging_config())
     logger = getLogger()
-    curses_logfile = "/home/scott/Documents/code/simple-shuffle/curses_logfile.txt"
+    curses_logfile = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "..",
+        "curses_logfile.txt"
+    )
     display_refresh_delay = 5
     sample_rate = 44100
+    sockfile = socket_file_location
+
+    @staticmethod
+    def getsocket():
+        """Return a socket.socket object that's listening."""
+        try:
+            # the file can't exist already if we're going to bind to it.
+            os.unlink(socket_file_location)
+        except OSError:
+            if os.path.exists(socket_file_location):
+                raise
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.bind(socket_file_location)
+        sock.listen(1)
+        return sock

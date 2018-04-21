@@ -124,6 +124,7 @@ class Player():
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
+        self.socket = Config.getsocket()
         self.begin_playback()
         self.show()
 
@@ -289,9 +290,14 @@ class Player():
             if mixer.music.get_pos() == -1:
                 self.skip()
                 self.begin_playback()
-            button_press = curses.wrapper(
-                self.display, self.displayed_text, self.curses_logger
-            )
+            data_from_socket = self.socket.recv()
+            if data_from_socket:
+                #parse data from socket
+                ...
+            else:
+                button_press = curses.wrapper(
+                    self.display, self.displayed_text, self.curses_logger
+                )
             # Wraps the "display" function call in a curses window.
             if button_press == curses.KEY_DOWN:
                 log.debug(
