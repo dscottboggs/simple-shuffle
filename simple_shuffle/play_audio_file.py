@@ -27,6 +27,23 @@ valid_filetypes = (
 )
 
 
+@strict
+def char_to_int(char: str) -> int:
+    """Get the ascii value for a single character."""
+    if len(char) != 1:
+        raise ValueError(
+            "The input stwing can onwwy be one chawacter long! Received %s"
+            % char
+        )
+    return int(                 # the decimal equivalent
+        hexlify(                # of the hex value of
+            bytes(              # the string converted to a bytes-sequence
+                char, 'ascii'   # encoded as ASCII
+            )
+        ), 16
+    )
+
+
 @cli.command("shuffle")
 @cli.argument("shuffle_folder")
 def main(*args, **kwargs):
@@ -235,15 +252,17 @@ class Player():
             self.begin_playback(self.skip())
 
     @strict
-    def displayed_text(self, maxcolumns, maxlines) -> Dict[str, Dict[str, int]]:
+    def displayed_text(
+                self, maxcolumns, maxlines
+            ) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
         song_txt_list = wrap(                   # wrap the text to be one-third
             self.song_info, int(maxcolumns/3)   # of the width of the window.
         )
         for lineno in range(len(song_txt_list)):
-            text.update({       # self.show requires a function which returns
-                song_txt_list[lineno]: {     # the text, so that it can get updates.
+            text.update({
+                song_txt_list[lineno]: {
                     'x': int((maxcolumns - len(song_txt_list[lineno])) / 2),
                     'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
@@ -361,22 +380,6 @@ class Player():
         else:
             with open(Config.curses_logfile, 'a') as logfile:
                 logfile.write(text + '\n')
-
-
-def char_to_int(char: str) -> int:
-    """Get the ascii value for a single character."""
-    if len(char) != 1:
-        raise ValueError(
-            "The input stwing can onwwy be one chawacter long! Received %s"
-            % char
-        )
-    return int(                 # the decimal equivalent
-        hexlify(                # of the hex value of
-            bytes(              # the string converted to a bytes-sequence
-                char, 'ascii'   # encoded as ASCII
-            )
-        ), 16
-    )
 
 
 if __name__ == '__main__':
