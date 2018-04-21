@@ -349,48 +349,52 @@ class Player():
                 button_press = curses.wrapper(
                     self.display, self.displayed_text, self.curses_logger
                 )
-            # Wraps the "display" function call in a curses window.
-            if button_press == curses.KEY_DOWN:
-                log.debug(
-                    "Volume down button pressed. Current volume: %f.",
-                    mixer.music.get_volume()
-                )
-                mixer.music.set_volume(mixer.music.get_volume() - 0.05)
-            if button_press == curses.KEY_UP:
-                log.debug(
-                    "Volume up button pressed. Current volume: %f.",
-                    mixer.music.get_volume()
-                )
-                mixer.music.set_volume(mixer.music.get_volume() + 0.05)
-            if button_press == curses.KEY_RIGHT:
+            def skip_back():
+                if mixer.music.get_pos() <= 5000:
+                    self.previous()
+                    self.begin_playback()
+                else:
+                    self.restart()
+                    self.begin_playback()
+            def skip():
                 self.skip()
                 self.begin_playback()
-            if button_press == curses.KEY_LEFT \
-                    and mixer.music.get_pos() <= 5000:
-                self.previous()
-                self.begin_playback()
-            if button_press == curses.KEY_LEFT \
-                    and mixer.music.get_pos() > 5000:
-                self.restart()
-                self.begin_playback()
-            if button_press == char_to_int(' '):
-                if mixer.music.get_busy() and not self.paused:
-                    log.debug(
-                        "Pausing playback at %d",
-                        mixer.music.get_pos() / 1000
-                    )
-                    mixer.music.pause()
-                    self.paused = True
-                elif self.paused:
-                    log.debug("Resuming playback.")
-                    mixer.music.unpause()
-                    self.paused = False
-            if button_press == char_to_int('s')\
-                    or button_press == char_to_int('q'):
+            def pause():
+                log.debug(
+                    "Pausing playback at %d",
+                    mixer.music.get_pos() / 1000
+                )
+                mixer.music.pause()
+                self.paused = True
+            def unpause():
+                log.debug("Resuming playback.")
+                mixer.music.unpause()
+                self.paused = False
+            def stop_drop_and_roll():
                 log.debug("Stopping and exiting")
+                self.socket.close()
                 mixer.music.stop()
                 mixer.quit()
                 exit(0)
+            button_action = []
+            button_action[curses.KEY_DOWN] = lambda: mixer.music.set_volume(
+                mixer.music.get_volume() - 0.05
+            )
+            button_action[curses.KEY_UP] = lambda: mixer.music.set_volume(
+                mixer.music.get_volume() + 0.05
+            )
+            button_action[curses.KEY_LEFT] = skip_back
+            button_action[curses.KEY_RIGHT] = skip
+            button_action[char_to_int(' ')] = pause if self.paused else unpause
+            button_action[char_to_int('s')] = stop_drop_and_roll
+            button_action[char_to_int('q')] = stop_drop_and_roll
+            try:
+                button_action[button_press]()   # call the function at the
+                                                # index of the number received
+                                                # from getch()
+            except IndexError:
+                log.debug("Unexpected keystroke %d received." % button_press)
+
 
     @staticmethod
     def display(screen, text: Callable, logger) -> int:
