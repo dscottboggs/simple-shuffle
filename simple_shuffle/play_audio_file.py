@@ -371,7 +371,7 @@ class Player:
             try:
                 data_from_socket, _ = self.socket.accept()
             except BlockingIOError:
-                ...
+                data_from_socket = None
             if data_from_socket:
                 # parse data from socket
                 ...
