@@ -191,10 +191,21 @@ class Player():
         """
         return TinyTag.get(filename)
 
+    @strict
+    def get_mutagen_tags(self) -> str:
+        """Return appropriatly formatted metatags from the current file.
+
+        TODO tags from mutagen as a fallback for when TinyTag fails.
+
+        Example file: /home/scott/Music/DJ Shadow/(1998) Entroducing/07 - untitled.flac
+
+        """
+        return get_filename(self.current_file)
+
     @property
     @strict
     def song_info(self) -> str:
-        """Return appropriatly formatted ID3 tags from the current file.
+        """Return appropriatly formatted metatags from the current file.
 
         Makes several attempts at picking fewer tags before finally displaying
         the filename as a fallback.
@@ -206,7 +217,7 @@ class Player():
             )
         except TinyTagException:
             self.curses_logger(f"TinyTag failed to parse {self.current_file}")
-            return get_filename(self.current_file)
+            return get_mutagen_tags(self.current_file)
         if tags.title is None:
             get_filename(self.current_file)
         else:
