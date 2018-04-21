@@ -370,10 +370,8 @@ class Player:
                 self.begin_playback()
             try:
                 data_from_socket, _ = self.socket.accept()
-            except BlockingIOError as e:
-                import errno
-                if e.errno != errno.ECONNRESET:
-                    raise
+            except BlockingIOError:
+                ...
             if data_from_socket:
                 # parse data from socket
                 ...
