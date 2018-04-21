@@ -276,8 +276,8 @@ class Player():
                     'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
                 }
             })
-        text.update({     # I'll come back to this
-            str(float(mixer.music.get_pos()/1000)) + " seconds": {
+        text.update({
+            str(int(float(mixer.music.get_pos()/1000))) + " seconds": {
                 'x': 2,
                 'y': int(maxlines) - 1
             }
@@ -337,7 +337,7 @@ class Player():
                 if mixer.music.get_busy() and not self.paused:
                     log.debug(
                         "Pausing playback at %d",
-                        mixer.music.get_pos() / 100
+                        mixer.music.get_pos() / 1000
                     )
                     mixer.music.pause()
                     self.paused = True
