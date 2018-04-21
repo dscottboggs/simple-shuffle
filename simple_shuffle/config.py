@@ -46,3 +46,4 @@ class Config():
     logger = getLogger()
     curses_logfile = "/home/scott/Documents/code/simple-shuffle/curses_logfile.txt"
     display_refresh_delay = 2
+    sample_rate = 48000

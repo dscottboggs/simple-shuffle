@@ -2,14 +2,13 @@
 """Simple keyboard controlled ncurses audio player for shuffling."""
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
-from magic import detect_from_filename as get_filetype
+from pygame import error as PyGameError
 from os import access, walk, environ
 from os import sep as root
 from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
-from mutagen.flac import FLAC
-from mutagen.ogg import OggFileType
+from tinytag import TinyTag
 import curses
 from binascii import hexlify
 from strict_hint import strict
@@ -21,11 +20,7 @@ import click as cli
 from config import Config
 
 log = Config.logger
-mixer.init(frequency=44100)
-valid_filetypes = (
-    "audio/x-flac",
-    "audio/ogg"
-)
+mixer.init(frequency=Config.sample_rate)
 
 
 @strict
@@ -128,7 +123,7 @@ class Player():
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
-        self.begin_playback(self.shuffle.current)
+        self.begin_playback()
         self.show()
 
     @strict
@@ -187,17 +182,12 @@ class Player():
         else:
             raise ValueError("%s is not accessible!" % folder)
 
-    def get_tags(self, filename, filetype):
-        """Get the tags from an arbitrary file."""
-        if filetype == "audio/x-flac":
-            return FLAC(filename)
-        elif filetype == "audio/ogg":
-            return OggFileType(filename)
-        else:
-            raise NotImplementedError(
-                "The get_tags function can only handle ogg and flac as of yet!"
-                + " Received %s." % filetype
-            )
+    def get_tags(self, filename):
+        """Get the tags from an arbitrary file.
+
+        Alias for TinyTag.get.
+        """
+        return TinyTag.get(filename)
 
     @property
     @strict
@@ -208,58 +198,50 @@ class Player():
         the filename as a fallback.
         """
         tags = self.get_tags(
-            self.current_file,
-            get_filetype(self.current_file).mime_type
+            self.current_file
         )
         outtxt: str = ''
-        try:
-            # the default output
-            outtxt = "%s by %s, track %d from the album, %s." % (
-                tags['title'][0],
-                tags['artist'][0],
-                int(tags['tracknumber'][0]),
-                tags['album'][0]
-            )
-            self.curses_logger("Song info: %s", outtxt)
-            return outtxt
-        except (KeyError, ValueError):
-            try:
-                # Perhaps the tracknumber or album tags are missing, try
-                # displaying just the song title and the artist
-                outtxt = "%s by %s" % (tags['title'][0], tags['artist'][0])
-                self.curses_logger("Song info: %s", outtxt)
-                return outtxt
-            except (KeyError, ValueError):
+        if tags.title is None:
+            get_filename(self.current_file)
+        else:
+            if tags.track is None or tracks.album is None:
                 try:
-                    # perhaps there's still a title tag, try displaying that.
-                    outtxt = tags['title'][0]
+                    # Perhaps the tracknumber or album tags are missing, try
+                    # displaying just the song title and the artist
+                    outtxt = f"{tags.title} by {tags.artist}"
                     self.curses_logger("Song info: %s", outtxt)
                     return outtxt
                 except (KeyError, ValueError):
-                    # Just return the filename...
                     try:
-                        outtxt = basename(
-                            self.current_file
-                        ).rsplit('.', maxsplit=1)[1]
+                        # perhaps there's still a title tag, try just that.
+                        outtxt = tags.title
                         self.curses_logger("Song info: %s", outtxt)
                         return outtxt
-                    except IndexError:
-                        # the filename has no extension to trim
-                        outtxt = basename(self.current_file)
-                        self.curses_logger("Song info: %s", outtxt)
-                        return outtxt
+                    except (KeyError, ValueError):
+                        # Just return the filename...
+                        get_filename(self.current_file)
+            else:
+                # the default output
+                outtxt = "%s by %s, track %s from the album %s." % (
+                    tags.title,
+                    tags.artist,
+                    get_track_number(tags),
+                    tags.album
+                )
+                self.curses_logger("Song info: %s", outtxt)
+                return outtxt
 
     @strict
-    def begin_playback(self, audio_file: str) -> None:
+    def begin_playback(self) -> None:
         """Play an audio file."""
-        filetype = get_filetype(audio_file).mime_type
-        if filetype in valid_filetypes:
-            log.debug("Beginning playback of %s", audio_file)
+        try:
+            log.debug("Attempting to begin playback of {self.current_file}")
             mixer.music.load(audio_file)
             mixer.music.play()
             self.paused = False
-        else:
-            self.begin_playback(self.skip())
+        except PyGameError:
+            self.skip()
+            self.begin_playback()
 
     @strict
     def displayed_text(
@@ -300,7 +282,8 @@ class Player():
         """
         while True:
             if mixer.music.get_pos() == -1:
-                self.begin_playback(self.skip())
+                self.skip()
+                self.begin_playback()
             button_press = curses.wrapper(
                 self.display, self.displayed_text, self.curses_logger
             )
@@ -318,13 +301,16 @@ class Player():
                 )
                 mixer.music.set_volume(mixer.music.get_volume() + 0.05)
             if button_press == curses.KEY_RIGHT:
-                self.begin_playback(self.skip())
+                self.skip()
+                self.begin_playback()
             if button_press == curses.KEY_LEFT \
                     and mixer.music.get_pos() <= 5000:
-                self.begin_playback(self.previous())
+                self.previous()
+                self.begin_playback()
             if button_press == curses.KEY_LEFT \
                     and mixer.music.get_pos() > 5000:
-                self.begin_playback(self.restart())
+                self.restart()
+                self.begin_playback()
             if button_press == char_to_int(' '):
                 if mixer.music.get_busy() and not self.paused:
                     log.debug(
@@ -390,6 +376,27 @@ class Player():
         else:
             with open(Config.curses_logfile, 'a') as logfile:
                 logfile.write(text + '\n')
+
+
+def get_track_number(tags: TinyTag) -> str:
+    """Get either the track number with or without the total."""
+    return str(tags.track) if tags.track_total is None\
+        else f"{tags.track} out of {tags.track_total}"
+
+
+def get_filename(filepath: str) -> str:
+    """Get the filename without its path or extension."""
+    try:
+        outtxt = basename(
+            self.current_file
+        ).rsplit('.', maxsplit=1)[0]
+        self.curses_logger("Song info: %s", outtxt)
+        return outtxt
+    except IndexError:
+        # the filename has no extension to trim
+        outtxt = basename(self.current_file)
+        self.curses_logger("Song info: %s", outtxt)
+        return outtxt
 
 
 if __name__ == '__main__':
