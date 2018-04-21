@@ -164,14 +164,14 @@ class PlayingFile:
             )
 
 
-class Player():
+class Player:
     """An object containing the actual player."""
     @strict
     def __init__(self, folder: str):
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
-        self.socket = Config.getsocket()
+        self.socket = Config.socket_file_location
         self.begin_playback()
         self.show()
 
@@ -209,6 +209,27 @@ class Player():
         except StopIteration:
             log.fatal("List of tracks has been exhausted.")
             exit(0)
+
+    @strict
+    @property
+    def socket(self) -> socket:
+        """A socket on which to listen to commands."""
+        return self.sock
+
+    @strict
+    @socket.setter
+    def socket(self, path: str):
+        """Set up the command socket."""
+        try:
+            # the file can't exist already if we're going to bind to it.
+            os.unlink(socket_file_location)
+        except OSError:
+            if os.path.exists(socket_file_location):
+                raise
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.bind(socket_file_location)
+        self.sock.listen(1)
+        self.sock.settimeout(Config.display_refresh_delay)
 
     @property
     @strict
@@ -287,6 +308,7 @@ class Player():
         try:
             mixer.init(self.current_file.sample_rate)
         except ValueError:
+            log.info()
             self.skip()
             self.begin_playback()
         try:
@@ -341,7 +363,7 @@ class Player():
             if mixer.music.get_pos() == -1:
                 self.skip()
                 self.begin_playback()
-            data_from_socket = self.socket.recv(32)
+            data_from_socket,_ = self.socket.accept()
             if data_from_socket:
                 #parse data from socket
                 ...
