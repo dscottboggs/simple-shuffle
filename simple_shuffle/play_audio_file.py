@@ -16,6 +16,7 @@ from typing import Dict, Callable
 from textwrap import wrap
 from datetime import datetime
 from random import shuffle
+from blist import blist
 import click as cli
 import socket
 from config import Config
@@ -413,7 +414,9 @@ class Player:
                 mixer.music.stop()
                 mixer.quit()
                 exit(0)
-            button_action = []
+            button_action = blist([None])
+            button_action *= 2**16  # I just picked that number because it'll
+            # probably be big enough. Could be 32 or 64 if need be.
             button_action[curses.KEY_DOWN] = lambda: mixer.music.set_volume(
                 mixer.music.get_volume() - 0.05
             )
