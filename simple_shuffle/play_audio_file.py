@@ -230,7 +230,7 @@ class Player:
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.bind(Config.socket_file_location)
         self.sock.listen(1)
-        self.sock.settimeout(Config.display_refresh_delay)
+        self.sock.setblocking(False)
 
     @property
     @strict
