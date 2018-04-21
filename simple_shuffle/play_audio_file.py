@@ -16,6 +16,7 @@ from typing import Dict, Callable
 from textwrap import wrap
 from datetime import datetime
 from random import shuffle
+import click as cli
 from config import Config
 
 log = Config.logger
@@ -24,6 +25,13 @@ valid_filetypes = (
     "audio/x-flac",
     "audio/ogg"
 )
+
+
+@cli.command("shuffle")
+@cli.argument("shuffle_folder")
+def main(*args, **kwargs):
+    """The main entrypoint of the application. Acts as a CLI."""
+    Player(kwargs['shuffle_folder'])
 
 
 @strict
@@ -371,4 +379,5 @@ def char_to_int(char: str) -> int:
     )
 
 
-Player("/home/scott/Music")
+if __name__ == '__main__':
+    main()
