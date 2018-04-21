@@ -428,11 +428,9 @@ class Player:
             button_action[char_to_int(' ')] = pause if self.paused else unpause
             button_action[char_to_int('s')] = stop_drop_and_roll
             button_action[char_to_int('q')] = stop_drop_and_roll
-            try:
+            if button_action[button_press] is not None:
                 button_action[button_press]()        # call the function at the
                 #                     index of the number received from getch()
-            except IndexError:
-                log.debug("Unexpected keystroke %d received." % button_press)
 
     @staticmethod
     def display(screen, text: Callable, logger) -> int:
