@@ -19,6 +19,7 @@ from random import shuffle
 import click as cli
 from config import Config
 
+
 log = Config.logger
 mixer.init(frequency=Config.sample_rate)
 
@@ -204,7 +205,7 @@ class Player():
         if tags.title is None:
             get_filename(self.current_file)
         else:
-            if tags.track is None or tracks.album is None:
+            if tags.track is None or tags.album is None:
                 try:
                     # Perhaps the tracknumber or album tags are missing, try
                     # displaying just the song title and the artist
@@ -236,7 +237,7 @@ class Player():
         """Play an audio file."""
         try:
             log.debug("Attempting to begin playback of {self.current_file}")
-            mixer.music.load(audio_file)
+            mixer.music.load(self.current_file)
             mixer.music.play()
             self.paused = False
         except PyGameError:
