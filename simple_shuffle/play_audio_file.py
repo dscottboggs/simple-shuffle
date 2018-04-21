@@ -368,14 +368,20 @@ class Player:
             if mixer.music.get_pos() == -1:
                 self.skip()
                 self.begin_playback()
-            data_from_socket,_ = self.socket.accept()
+            try:
+                data_from_socket, _ = self.socket.accept()
+            except BlockingIOError as e:
+                import errno
+                if e.errno != errno.ECONNRESET:
+                    raise
             if data_from_socket:
-                #parse data from socket
+                # parse data from socket
                 ...
             else:
                 button_press = curses.wrapper(
                     self.display, self.displayed_text, self.curses_logger
                 )
+
             def skip_back():
                 if mixer.music.get_pos() <= 5000:
                     self.previous()
@@ -383,9 +389,11 @@ class Player:
                 else:
                     self.restart()
                     self.begin_playback()
+
             def skip():
                 self.skip()
                 self.begin_playback()
+
             def pause():
                 log.debug(
                     "Pausing playback at %d",
@@ -393,10 +401,12 @@ class Player:
                 )
                 mixer.music.pause()
                 self.paused = True
+
             def unpause():
                 log.debug("Resuming playback.")
                 mixer.music.unpause()
                 self.paused = False
+
             def stop_drop_and_roll():
                 log.debug("Stopping and exiting")
                 self.socket.close()
