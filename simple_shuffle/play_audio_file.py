@@ -54,10 +54,10 @@ def main(*args, **kwargs):
     unless you've got duplicates. Specify the folder to be shuffled on the
     command line just after the name. By default it shuffles /home/$USER/Music.
     """
-    try:
-        Player(kwargs['shuffle_folder'])
-    except KeyError:
+    if kwargs['shuffle_folder'] is None:
         Player(getpath(root, 'home', environ['USER'], 'Music'))
+    else:
+        Player(kwargs['shuffle_folder'])
 
 
 @strict
