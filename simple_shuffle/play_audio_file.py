@@ -211,14 +211,14 @@ class Player:
             log.fatal("List of tracks has been exhausted.")
             exit(0)
 
-    @strict
     @property
+    @strict
     def socket(self) -> socket.socket:
         """A socket on which to listen to commands."""
         return self.sock
 
-    @strict
     @socket.setter
+    @strict
     def socket(self, path: str):
         """Set up the command socket."""
         try:
