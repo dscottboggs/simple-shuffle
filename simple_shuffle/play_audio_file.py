@@ -212,7 +212,7 @@ class Player():
 
     @property
     @strict
-    def current_file(self) -> str:
+    def current_file(self) -> PlayingFile:
         try:
             if self._current_file.filepath == self.shuffle.current:
                 return self._current_file
