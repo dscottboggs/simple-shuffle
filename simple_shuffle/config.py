@@ -3,7 +3,6 @@ from logging import getLogger, DEBUG
 from logging.config import dictConfig
 from os import sep as root
 import os
-import socket
 
 
 def get_logging_config():

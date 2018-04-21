@@ -3,9 +3,9 @@
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from pygame import error as PyGameError
-from os import access, walk, environ
+from os import access, walk, environ, unlink
 from os import sep as root
-from os.path import isdir, basename
+from os.path import isdir, basename, exists
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from tinytag import TinyTag, TinyTagException
@@ -223,9 +223,9 @@ class Player:
         """Set up the command socket."""
         try:
             # the file can't exist already if we're going to bind to it.
-            os.unlink(socket_file_location)
+            unlink(socket_file_location)
         except OSError:
-            if os.path.exists(socket_file_location):
+            if exists(socket_file_location):
                 raise
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.bind(socket_file_location)
