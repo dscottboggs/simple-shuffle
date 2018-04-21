@@ -8,11 +8,12 @@ if len(urls) < 1:
     raise NotImplementedError()
 versionnum = len([c for c in vcs.iter_commits()])\
     - 116   # version 0.0.* had 116 revisions
-print("Current version 0.1.%d" % versionnum)
+versionstr = "0.1.%d" % versionnum
+print("Current version %s" % versionstr)
 
 setup(
     name="Simple Shuffle",
-    version="0.0.%d" % versionnum,
+    version=versionstr,
     author="D. Scott Boggs",
     author_email="scott@tams.tech",
     description="Shuffles a folder of music. That is all.",
