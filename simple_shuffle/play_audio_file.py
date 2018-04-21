@@ -8,7 +8,7 @@ from os import sep as root
 from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
-from tinytag import TinyTag
+from tinytag import TinyTag, TinyTagException
 import curses
 from binascii import hexlify
 from strict_hint import strict
@@ -198,10 +198,14 @@ class Player():
         Makes several attempts at picking fewer tags before finally displaying
         the filename as a fallback.
         """
-        tags = self.get_tags(
-            self.current_file
-        )
         outtxt: str = ''
+        try:
+            tags = self.get_tags(
+                self.current_file
+            )
+        except TinyTagException:
+            self.curses_logger(f"TinyTag failed to parse {self.current_file}")
+            return get_filename(self.current_file)
         if tags.title is None:
             get_filename(self.current_file)
         else:
@@ -236,7 +240,7 @@ class Player():
     def begin_playback(self) -> None:
         """Play an audio file."""
         try:
-            log.debug("Attempting to begin playback of {self.current_file}")
+            log.debug(f"Attempting to begin playback of {self.current_file}")
             mixer.music.load(self.current_file)
             mixer.music.play()
             self.paused = False
