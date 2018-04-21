@@ -46,7 +46,7 @@ def char_to_int(char: str) -> int:
 
 
 @cli.command("shuffle")
-@cli.argument("shuffle_folder")
+@cli.argument("shuffle_folder", required=False)
 def main(*args, **kwargs):
     """The simple_shuffle script shuffles a folder of flac and ogg files.
 
