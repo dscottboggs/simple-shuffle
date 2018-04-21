@@ -223,12 +223,12 @@ class Player:
         """Set up the command socket."""
         try:
             # the file can't exist already if we're going to bind to it.
-            unlink(socket_file_location)
+            unlink(Config.socket_file_location)
         except OSError:
-            if exists(socket_file_location):
+            if exists(Config.socket_file_location):
                 raise
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.bind(socket_file_location)
+        self.sock.bind(Config.socket_file_location)
         self.sock.listen(1)
         self.sock.settimeout(Config.display_refresh_delay)
 
