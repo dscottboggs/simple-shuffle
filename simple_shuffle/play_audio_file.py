@@ -3,7 +3,8 @@
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from magic import detect_from_filename as get_filetype
-from os import access, walk
+from os import access, walk, environ
+from os import sep as root
 from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
@@ -45,10 +46,18 @@ def char_to_int(char: str) -> int:
 
 
 @cli.command("shuffle")
-@cli.argument("shuffle_folder")
+@cli.argument("shuffle_folder", help="SHUFFLED_FOLDER")
 def main(*args, **kwargs):
-    """The main entrypoint of the application. Acts as a CLI."""
-    Player(kwargs['shuffle_folder'])
+    """The simple_shuffle script shuffles a folder of flac and ogg files.
+
+    It does a true shuffle of all of the songs in the folder, without repeats,
+    unless you've got duplicates. Specify the folder to be shuffled on the
+    command line just after the name. By default it shuffles /home/$USER/Music.
+    """
+    try:
+        Player(kwargs['shuffle_folder'])
+    except KeyError:
+        Player(getpath(root, 'home', environ['USER'], 'Music'))
 
 
 @strict
