@@ -17,6 +17,7 @@ from textwrap import wrap
 from datetime import datetime
 from random import shuffle
 import click as cli
+import socket
 from config import Config
 
 
@@ -212,7 +213,7 @@ class Player:
 
     @strict
     @property
-    def socket(self) -> socket:
+    def socket(self) -> socket.socket:
         """A socket on which to listen to commands."""
         return self.sock
 
