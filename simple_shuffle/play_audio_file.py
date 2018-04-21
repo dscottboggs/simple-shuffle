@@ -122,6 +122,7 @@ class PlayingFile:
     """Methods and data for the currently playing file"""
     def __init__(self, filepath):
         self.filepath = filepath
+        self._tags = False
 
     @property
     def tags(self):
