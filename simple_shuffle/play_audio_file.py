@@ -299,7 +299,7 @@ class Player:
                 outtxt = "%s by %s, track %s from the album %s." % (
                     self.current_file.tags.title,
                     self.current_file.tags.artist,
-                    get_track_number(tags),
+                    get_track_number(self.current_file.tags),
                     self.current_file.tags.album
                 )
                 self.curses_logger("Song info: %s", outtxt)
