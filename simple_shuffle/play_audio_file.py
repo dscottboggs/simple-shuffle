@@ -341,7 +341,7 @@ class Player():
             if mixer.music.get_pos() == -1:
                 self.skip()
                 self.begin_playback()
-            data_from_socket = self.socket.recv()
+            data_from_socket = self.socket.recv(32)
             if data_from_socket:
                 #parse data from socket
                 ...
