@@ -123,6 +123,7 @@ class Shuffler:
 
 class Player():
     """An object containing the actual player."""
+    @strict
     def __init__(self, folder: str):
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
