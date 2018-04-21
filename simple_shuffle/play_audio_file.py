@@ -146,7 +146,8 @@ class PlayingFile:
 
         TODO tags from mutagen as a fallback for when TinyTag fails.
 
-        Example file: /home/scott/Music/DJ Shadow/(1998) Entroducing/07 - untitled.flac
+        Example file:
+            /home/scott/Music/DJ Shadow/(1998) Entroducing/07 - untitled.flac
 
         """
         return get_filename(self.current_file.filepath)
@@ -424,12 +425,10 @@ class Player:
             button_action[char_to_int('s')] = stop_drop_and_roll
             button_action[char_to_int('q')] = stop_drop_and_roll
             try:
-                button_action[button_press]()   # call the function at the
-                                                # index of the number received
-                                                # from getch()
+                button_action[button_press]()        # call the function at the
+                #                     index of the number received from getch()
             except IndexError:
                 log.debug("Unexpected keystroke %d received." % button_press)
-
 
     @staticmethod
     def display(screen, text: Callable, logger) -> int:
@@ -437,7 +436,7 @@ class Player:
 
         This is essentially a wrapper around stdscr.addstr and stdscr.getch.
         The text must be received in the following format:
-            function which returns text to be displayed: {
+            text to be displayed: {
                 x: x coord
                 y: y coord
             }
