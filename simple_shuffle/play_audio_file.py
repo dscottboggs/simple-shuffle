@@ -159,7 +159,7 @@ class PlayingFile:
         """
         try:
             return self.get_tiny_tags().samplerate
-        except TinyTagException:
+        except (TinyTagException, LookupError):
             raise ValueError(
                 f"Unable to determine sample rate for {self.filepath}"
             )
