@@ -22,7 +22,6 @@ from simple_shuffle.config import Config
 
 
 log = Config.logger
-mixer.init(frequency=Config.sample_rate)
 
 
 @strict
@@ -170,12 +169,17 @@ class PlayingFile:
 class Player:
     """An object containing the actual player."""
     @strict
-    def __init__(self, folder: str):
+    def __init__(self,
+            folder: str,
+            autoplay: bool=True,
+            curses_display: bool=True):
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
-        self.begin_playback()
-        self.show()
+        if autoplay:
+            self.begin_playback()
+        if curses_display:
+            self.show()
 
     @staticmethod
     def volume_up():
