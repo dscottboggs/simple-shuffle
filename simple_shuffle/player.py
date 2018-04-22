@@ -163,8 +163,8 @@ class Player:
         """Retrieve the current volume level."""
         return mixer.music.get_volume()
 
-    @staticmethod
-    def volume_up():
+    def volume_up(self):
+        """Request that the audio volume be increased by 5%"""
         log.debug(
             "Volume requested to be turned up. Current volume "
             + self.current_volume
@@ -173,8 +173,8 @@ class Player:
             self.current_volume + 0.05
         )
 
-    @staticmethod
-    def volume_down():
+    def volume_down(self):
+        """Request that the audio volume be decreased by 5%"""
         log.debug(
             "Volume requested to be turned down. Current volume "
             + self.current_volume
