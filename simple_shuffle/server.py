@@ -55,3 +55,7 @@ def volume_up():
 @app.route("/volume_down")
 def volume_down():
     pool.apply(player.volume_down)
+
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port="21212")
