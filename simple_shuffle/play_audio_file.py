@@ -174,7 +174,6 @@ class Player:
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
-        self.socket = Config.socket_file_location
         self.begin_playback()
         self.show()
 
@@ -238,28 +237,6 @@ class Player:
         except StopIteration:
             log.fatal("List of tracks has been exhausted.")
             exit(0)
-
-    @property
-    @strict
-    def socket(self) -> socket.socket:
-        """A socket on which to listen to commands."""
-        return self.sock
-
-    @socket.setter
-    @strict
-    def socket(self, path: str):
-        """Set up the command socket."""
-        try:
-            # the file can't exist already if we're going to bind to it.
-            unlink(Config.socket_file_location)
-        except OSError:
-            if exists(Config.socket_file_location):
-                raise
-        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(Config.socket_file_location)
-        self.sock.listen(1)
-        self.sock.setblocking(False)
 
     @property
     @strict
