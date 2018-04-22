@@ -21,6 +21,6 @@ setup(
     keywords="music player shuffle curses ncurses minimal simple",
     url=urls[0],
     packages=["simple_shuffle"],
-    install_requires=["pygame", "mutagen", "file-magic", "click"],
+    install_requires=["pygame", "mutagen", "file-magic", "click", "blist"],
     setup_requires=["gitpython"]
 )

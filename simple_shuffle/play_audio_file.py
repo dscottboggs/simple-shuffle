@@ -16,6 +16,7 @@ from typing import Dict, Callable
 from textwrap import wrap
 from datetime import datetime
 from random import shuffle
+from blist import blist
 import click as cli
 import socket
 from config import Config
@@ -325,7 +326,7 @@ class Player:
                 outtxt = "%s by %s, track %s from the album %s." % (
                     self.current_file.tags.title,
                     self.current_file.tags.artist,
-                    get_track_number(tags),
+                    get_track_number(self.current_file.tags),
                     self.current_file.tags.album
                 )
                 self.curses_logger("Song info: %s", outtxt)
@@ -408,7 +409,9 @@ class Player:
                     self.display, self.displayed_text, self.curses_logger
                 )
 
-            button_action = []
+            button_action = blist([None])
+            button_action *= 2**16  # I just picked that number because it'll
+            # probably be big enough. Could be 32 or 64 if need be.
             button_action[curses.KEY_DOWN] = self.volume_downs
             button_action[curses.KEY_UP] = self.volume_up
             button_action[curses.KEY_LEFT] = self.previous
@@ -416,11 +419,9 @@ class Player:
             button_action[char_to_int(' ')] = self.pause_unpause
             button_action[char_to_int('s')] = self.stop_drop_and_roll
             button_action[char_to_int('q')] = self.stop_drop_and_roll
-            try:
+            if button_action[button_press] is not None:
                 button_action[button_press]()        # call the function at the
                 #                     index of the number received from getch()
-            except IndexError:
-                log.debug("Unexpected keystroke %d received." % button_press)
 
     @staticmethod
     def display(screen, text: Callable, logger) -> int:
