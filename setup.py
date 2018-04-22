@@ -22,7 +22,7 @@ logfile = os.path.join(
 )
 
 # HACK: This requires that the permissions be changed manually, needs to be
-# fixed. How to determine the user executing a command as sudo??
+# fixed. How to determine the user executing a command as sudo?
 if not exists(logfile):
     open(logfile, 'w').close()
 
