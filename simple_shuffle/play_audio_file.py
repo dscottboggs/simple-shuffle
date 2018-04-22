@@ -178,6 +178,32 @@ class Player:
         self.begin_playback()
         self.show()
 
+    @staticmethod
+    def volume_up():
+        mixer.music.set_volume(
+            mixer.music.get_volume() - 0.05
+        )
+
+    @staticmethod
+    def volume_down():
+        mixer.music.set_volume(
+            mixer.music.get_volume() + 0.05
+        )
+
+    def pause_unpause(self):
+        """Pause playing playback, or unpause if paused."""
+        if self.paused:
+            log.debug("Resuming playback.")
+            mixer.music.unpause()
+            self.paused = False
+        else:
+            log.debug(
+                "Pausing playback at %d",
+                mixer.music.get_pos() / 1000
+            )
+            mixer.music.pause()
+            self.paused = True
+
     @strict
     def restart(self) -> str:
         """Restart the currently playing song."""
@@ -382,49 +408,14 @@ class Player:
                     self.display, self.displayed_text, self.curses_logger
                 )
 
-            def skip_back():
-                if mixer.music.get_pos() <= 5000:
-                    self.previous()
-                    self.begin_playback()
-                else:
-                    self.restart()
-                    self.begin_playback()
-
-            def skip():
-                self.skip()
-                self.begin_playback()
-
-            def pause():
-                log.debug(
-                    "Pausing playback at %d",
-                    mixer.music.get_pos() / 1000
-                )
-                mixer.music.pause()
-                self.paused = True
-
-            def unpause():
-                log.debug("Resuming playback.")
-                mixer.music.unpause()
-                self.paused = False
-
-            def stop_drop_and_roll():
-                log.debug("Stopping and exiting")
-                self.socket.close()
-                mixer.music.stop()
-                mixer.quit()
-                exit(0)
             button_action = []
-            button_action[curses.KEY_DOWN] = lambda: mixer.music.set_volume(
-                mixer.music.get_volume() - 0.05
-            )
-            button_action[curses.KEY_UP] = lambda: mixer.music.set_volume(
-                mixer.music.get_volume() + 0.05
-            )
-            button_action[curses.KEY_LEFT] = skip_back
-            button_action[curses.KEY_RIGHT] = skip
-            button_action[char_to_int(' ')] = pause if self.paused else unpause
-            button_action[char_to_int('s')] = stop_drop_and_roll
-            button_action[char_to_int('q')] = stop_drop_and_roll
+            button_action[curses.KEY_DOWN] = self.volume_downs
+            button_action[curses.KEY_UP] = self.volume_up
+            button_action[curses.KEY_LEFT] = self.previous
+            button_action[curses.KEY_RIGHT] = self.skip
+            button_action[char_to_int(' ')] = self.pause_unpause
+            button_action[char_to_int('s')] = self.stop_drop_and_roll
+            button_action[char_to_int('q')] = self.stop_drop_and_roll
             try:
                 button_action[button_press]()        # call the function at the
                 #                     index of the number received from getch()
@@ -478,6 +469,13 @@ class Player:
         else:
             with open(Config.curses_logfile, 'a') as logfile:
                 logfile.write(text + '\n')
+
+    def stop_drop_and_roll(self):
+        log.debug("Stopping and exiting")
+        self.socket.close()
+        mixer.music.stop()
+        mixer.quit()
+        exit(0)
 
 
 def get_track_number(tags: TinyTag) -> str:
