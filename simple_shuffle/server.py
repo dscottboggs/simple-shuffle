@@ -82,8 +82,11 @@ def volume_down():
 def get_pos():
     return str(player.current_position)
 
+
 @app.route("/displayed_text")
+def displayed_text():
     return dumps(player.displayed_text)
+
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=21212)
