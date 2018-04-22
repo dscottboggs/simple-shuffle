@@ -10,7 +10,7 @@ from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from tinytag import TinyTag, TinyTagException
 from strict_hint import strict
-from typing import Dict
+from typing import Dict, Union
 from textwrap import wrap
 from random import shuffle
 import click as cli
@@ -323,30 +323,32 @@ class Player:
 
     @strict
     def displayed_text(
-                self, maxcolumns, maxlines
+                self, maxcolumns: Union[str, int], maxlines: Union[str, int]
             ) -> Dict[str, Dict[str, int]]:
         """Retrieve the text to display and where to display it."""
         text = {}
         song_txt_list = wrap(                   # wrap the text to be one-third
-            self.song_info, int(maxcolumns/3)   # of the width of the window.
+            self.song_info, int(int(maxcolumns)/3)   # of the width of the window.
         )
         for lineno in range(len(song_txt_list)):
             text.update({
                 song_txt_list[lineno]: {
-                    'x': int((maxcolumns - len(song_txt_list[lineno])) / 2),
-                    'y': int((maxlines-len(song_txt_list)) / 2 + lineno)
+                    'x': int(
+                        (int(maxcolumns) - len(song_txt_list[lineno])) / 2
+                    ),
+                    'y': int((int(maxlines)-len(song_txt_list)) / 2 + lineno)
                 }
             })
         text.update({
             str(int(float(self.current_position/1000))) + " seconds": {
                 'x': 2,
-                'y': int(maxlines) - 1
+                'y': int(int(maxlines)) - 1
             }
         })
         text.update({
             "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
-                'x': int(maxcolumns - 17),
-                'y': int(maxlines - 1)
+                'x': int(int(maxcolumns) - 17),
+                'y': int(int(maxlines) - 1)
             }
         })
         return text
