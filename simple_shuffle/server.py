@@ -86,6 +86,16 @@ def get_pos():
     return str(player.current_position)
 
 
+@app.route("/song_info")
+def song_info():
+    return player.song_info
+
+
+@app.route("/current_file")
+def current_file():
+    return player.current_file
+
+
 @app.route("/displayed_text")
 def displayed_text():
     return dumps(player.displayed_text(
