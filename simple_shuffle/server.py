@@ -9,7 +9,7 @@ from os import sep as root
 from multiprocessing import Pool
 app = Flask(__name__)
 pool = Pool(1)
-player = None
+player = Player(getpath(root, 'home', environ['USER'], 'Music'))
 
 
 @cli.command("shuffle-server")
@@ -30,7 +30,7 @@ def main(*args, **kwargs):
         return Player(kwargs['shuffle_folder'])
 
 
-player = main()
+# player = main()
 
 
 @app.route("/pause_unpause")
