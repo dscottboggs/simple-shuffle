@@ -379,7 +379,7 @@ class Player:
             button_action = blist([None])
             button_action *= 2**16  # I just picked that number because it'll
             # probably be big enough. Could be 32 or 64 if need be.
-            button_action[curses.KEY_DOWN] = self.volume_downs
+            button_action[curses.KEY_DOWN] = self.volume_down
             button_action[curses.KEY_UP] = self.volume_up
             button_action[curses.KEY_LEFT] = self.previous
             button_action[curses.KEY_RIGHT] = self.skip
