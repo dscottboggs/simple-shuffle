@@ -1,4 +1,4 @@
-self.current_position#!/usr/bin/env python3.6
+#!/usr/bin/env python3.6
 """Simple keyboard controlled ncurses audio player for shuffling."""
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
