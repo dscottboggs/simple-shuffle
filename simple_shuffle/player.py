@@ -158,16 +158,29 @@ class Player:
         if autoplay:
             self.begin_playback()
 
-    @staticmethod
-    def volume_up():
+    @property
+    def current_volume(self):
+        """Retrieve the current volume level."""
+        return mixer.music.get_volume()
+
+    def volume_up(self):
+        """Request that the audio volume be increased by 5%"""
+        log.debug(
+            "Volume requested to be turned up. Current volume "
+            + str(self.current_volume)
+        )
         mixer.music.set_volume(
-            mixer.music.get_volume() + 0.05
+            self.current_volume + 0.05
         )
 
-    @staticmethod
-    def volume_down():
+    def volume_down(self):
+        """Request that the audio volume be decreased by 5%"""
+        log.debug(
+            "Volume requested to be turned down. Current volume "
+            + str(self.current_volume)
+        )
         mixer.music.set_volume(
-            mixer.music.get_volume() - 0.05
+            self.current_volume - 0.05
         )
 
     def pause_unpause(self):
@@ -197,7 +210,7 @@ class Player:
         Calls self.restart() if StopIteration is raised.
         """
         log.debug(
-            "Skip-backwards button pressed.\nCurrent file: %s"
+            "Skip-backwards action has been requested.\nCurrent file: %s"
             + "\tCurrent Index:%d"
         )
         if self.current_position < 5000:
@@ -211,7 +224,7 @@ class Player:
     def skip(self) -> str:
         """Skip to the next file in the shuffler."""
         log.debug(
-            "Skip button pressed.\nCurrent file: %s\nNext file:%s",
+            "Skip action has been requested.\nCurrent file: %s\nNext file:%s",
             self.shuffle.current,
             self.shuffle.future
         )
@@ -292,10 +305,17 @@ class Player:
                 return outtxt
 
     @property
-    @strict
     def current_position(self):
         """Get the current position."""
         return mixer.music.get_pos()
+
+    @property
+    @strict
+    def current_time(self) -> str:
+        """Get the current time position in M:SS format."""
+        minutes = self.current_position / 60_000
+        seconds = self.current_position % 60_000
+        return "%d:%0d" % (minutes, seconds)
 
     @strict
     def begin_playback(self) -> None:
@@ -346,7 +366,7 @@ class Player:
             }
         })
         text.update({
-            "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
+            "VOL: %f%%" % (float(self.current_volume) * 100): {
                 'x': int(int(maxcolumns) - 17),
                 'y': int(int(maxlines) - 1)
             }

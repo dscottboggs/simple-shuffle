@@ -1,5 +1,5 @@
 """Configuration and logging for the project."""
-from logging import getLogger, DEBUG
+from logging import getLogger, WARN
 from logging.config import dictConfig
 from os import sep as root
 import os
@@ -32,12 +32,12 @@ def get_logging_config():
                 "testhandler": {
                     "class": "logging.StreamHandler",
                     "formatter": "brief",
-                    "level": DEBUG
+                    "level": WARN
                 }
             },
             "root": {
                 "handlers": ["testhandler"],
-                "level": DEBUG
+                "level": WARN
             }
         }
 
@@ -52,7 +52,7 @@ class Config:
         "log",
         "simple_shuffle.log"
     )
-    display_refresh_delay = 5
+    display_refresh_delay = 10
     sample_rate = 44100
     socket_file_location = os.path.join(root, "tmp", "simple_shuffle.sock")
     server_url = "http://127.0.0.1:5000"
