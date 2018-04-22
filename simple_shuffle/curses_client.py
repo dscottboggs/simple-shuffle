@@ -28,7 +28,7 @@ def char_to_int(char: str) -> int:
 
 class CursesInterface():
     """A curses interface to the Flask server API."""
-    def __init__(self, arg):
+    def __init__(self):
         self.show()
 
     @staticmethod
