@@ -30,6 +30,9 @@ def main(*args, **kwargs):
         return Player(kwargs['shuffle_folder'])
 
 
+player = main()
+
+
 @app.route("/pause_unpause")
 def pause_unpause():
     pool.apply(player.pause_unpause)
@@ -56,5 +59,4 @@ def volume_down():
 
 
 if __name__ == '__main__':
-    player = main()
     app.run(host="0.0.0.0", port="21212")
