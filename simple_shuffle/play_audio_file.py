@@ -30,7 +30,7 @@ def char_to_int(char: str) -> int:
     """Get the ascii value for a single character."""
     if len(char) != 1:
         raise ValueError(
-            "The input stwing can onwwy be one chawacter long! Received %s"
+            "The input string can only be one character long! Received %s"
             % char
         )
     return int(                 # the decimal equivalent
