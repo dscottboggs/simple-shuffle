@@ -52,7 +52,7 @@ class Config:
         "log",
         "simple_shuffle.log"
     )
-    display_refresh_delay = 5
+    display_refresh_delay = 10
     sample_rate = 44100
     socket_file_location = os.path.join(root, "tmp", "simple_shuffle.sock")
     server_url = "http://127.0.0.1:5000"

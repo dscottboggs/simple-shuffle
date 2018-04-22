@@ -46,7 +46,9 @@ def pause_unpause():
 
 @app.route("/quit")
 @app.route("/stop")
+@app.route("/stop_drop_and_roll")
 def stop_drop_and_roll():
+    """Stop playback and exit."""
     player.stop_drop_and_roll()
     exit(0)
 
