@@ -305,10 +305,17 @@ class Player:
                 return outtxt
 
     @property
-    @strict
     def current_position(self):
         """Get the current position."""
         return mixer.music.get_pos()
+
+    @property
+    @strict
+    def current_time(self) -> str:
+        """Get the current time position in M:SS format."""
+        minutes = self.current_position / 60_000
+        seconds = self.current_position % 60_000
+        return "%d:%0d" % (minutes, seconds)
 
     @strict
     def begin_playback(self) -> None:
