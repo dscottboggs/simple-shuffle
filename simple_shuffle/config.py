@@ -41,14 +41,16 @@ def get_logging_config():
             }
         }
 
+
 class Config:
     """Configuration and logging for the project."""
     dictConfig(get_logging_config())
     logger = getLogger()
     curses_logfile = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "..",
-        "curses_logfile.txt"
+        root,
+        "var",
+        "log",
+        "simple_shuffle.log"
     )
     display_refresh_delay = 5
     sample_rate = 44100
