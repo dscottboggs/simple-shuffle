@@ -8,6 +8,8 @@ from os import environ
 from os import sep as root
 from multiprocessing import Pool
 app = Flask(__name__)
+pool = Pool(1)
+player = None
 
 
 @cli.command("shuffle-server")
@@ -23,13 +25,9 @@ def main(*args, **kwargs):
     through standard HTTP requests.
     """
     if kwargs['shuffle_folder'] is None:
-        Player(getpath(root, 'home', environ['USER'], 'Music'))
+        return Player(getpath(root, 'home', environ['USER'], 'Music'))
     else:
-        Player(kwargs['shuffle_folder'])
-
-
-player = Player()
-pool = Pool(1)
+        return Player(kwargs['shuffle_folder'])
 
 
 @app.route("/pause_unpause")
@@ -58,4 +56,5 @@ def volume_down():
 
 
 if __name__ == '__main__':
+    player = main()
     app.run(host="0.0.0.0", port="21212")
