@@ -6,9 +6,9 @@ import click as cli
 from os.path import join as getpath
 from os import environ
 from os import sep as root
-from multiprocessing import Pool
+# from multiprocessing import Pool
 app = Flask(__name__)
-pool = Pool(1)
+# pool = Pool(1)
 player = Player(
     getpath(root, 'home', environ['USER'], 'Music'),
     autoplay=True,
@@ -40,31 +40,36 @@ def main(*args, **kwargs):
 @app.route("/pause_unpause")
 def pause_unpause():
     """Call Player.pause_unpause on the thread."""
-    pool.apply(player.pause_unpause)
+#    pool.apply(player.pause_unpause)
+    player.pause_unpause()
 
 
 @app.route("/skip")
 def skip():
     """Call Player.skip on the thread."""
-    pool.apply(player.skip)
+#    pool.apply(player.skip)
+    player.skip()
 
 
 @app.route("/previous")
 def previous():
     """Call Player.previous on the thread."""
-    pool.apply(player.previous)
+#    pool.apply(player.previous)
+    player.previous()
 
 
 @app.route("/volume_up")
 def volume_up():
     """Call Player.volume_up on the thread."""
-    pool.apply(player.volume_up)
+#    pool.apply(player.volume_up)
+    player.volume_up()
 
 
 @app.route("/volume_down")
 def volume_down():
     """Call Player.volume_down on the thread."""
-    pool.apply(player.volume_down)
+#    pool.apply(player.volume_down)
+    player.volume_down()
 
 
 if __name__ == '__main__':
