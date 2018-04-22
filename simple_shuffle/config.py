@@ -1,5 +1,5 @@
 """Configuration and logging for the project."""
-from logging import getLogger, INFO
+from logging import getLogger, WARN
 from logging.config import dictConfig
 from os import sep as root
 import os
@@ -32,12 +32,12 @@ def get_logging_config():
                 "testhandler": {
                     "class": "logging.StreamHandler",
                     "formatter": "brief",
-                    "level": INFO
+                    "level": WARN
                 }
             },
             "root": {
                 "handlers": ["testhandler"],
-                "level": INFO
+                "level": WARN
             }
         }
 

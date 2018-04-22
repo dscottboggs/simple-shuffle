@@ -81,7 +81,6 @@ class CursesInterface():
                 #              at the index of the number received from getch()
 
     @staticmethod
-    @strict
     def display(screen, text: Callable, logger) -> int:
         """Display some text in ncurses.
 
