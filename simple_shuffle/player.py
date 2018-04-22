@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.6
-"""Simple keyboard controlled ncurses audio player for shuffling."""
+"""Simple audio player for shuffling."""
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from pygame import error as PyGameError
@@ -269,13 +269,13 @@ class Player:
                         self.current_file.tags.artist,
                         self.current_file.tags.title
                     )
-                    self.curses_logger("Song info: %s", outtxt)
+                    log.debug("Song info: %s", outtxt)
                     return outtxt
                 except (KeyError, ValueError):
                     try:
                         # perhaps there's still a title tag, try just that.
                         outtxt = self.current_file.tags.title
-                        self.curses_logger("Song info: %s", outtxt)
+                        log.debug("Song info: %s", outtxt)
                         return outtxt
                     except (KeyError, ValueError):
                         # Just return the filename...
@@ -288,7 +288,7 @@ class Player:
                     get_track_number(self.current_file.tags),
                     self.current_file.tags.album
                 )
-                self.curses_logger("Song info: %s", outtxt)
+                log.debug("Song info: %s", outtxt)
                 return outtxt
 
     @property
