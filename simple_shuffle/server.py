@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Begin the simple_shuffle and watch for commands on a port."""
 from flask import Flask
-from play_audio_file import Player
+from simple_shuffle.play_audio_file import Player
 import click as cli
 from os.path import join as getpath
 from os import environ
