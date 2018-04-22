@@ -3,7 +3,7 @@
 import curses
 from binascii import hexlify
 from strict_hint import strict
-from typing import Callable, Dict
+from typing import Callable, Dict, Union
 from requests import get
 from datetime import datetime
 import blist
@@ -27,9 +27,31 @@ def char_to_int(char: str) -> int:
     )
 
 
+class FrozenDetector:
+    """Detect that playback has stalled."""
+    def __init__(self):
+        self.same_counter: int = 0
+        self.time_value: int = 0
+
+    @strict
+    def check_if_frozen(self, time: Union[int, str, float]) -> bool:
+        """Get whether or not the time has been the same for too long.
+
+        "Too long" is defined in config.py as Config.frozen_threshold.
+        returns a boolean based on whether or not it's "frozen".
+        """
+        if self.time_value == int(time):
+            self.same_counter += 1
+        self.time_value = int(time)
+        if self.same_counter >= Config.frozen_threshold:
+            return True
+        return False
+
+
 class CursesInterface():
     """A curses interface to the Flask server API."""
     def __init__(self):
+        self.freezedetect = FrozenDetector()
         self.show()
 
     @staticmethod
@@ -51,8 +73,16 @@ class CursesInterface():
         """
         while True:
             if self.query("current_position") == -1:
-                self.skip()
-                self.begin_playback()
+                self.query("skip")
+            if not self.paused:
+                if self.freezedetect.check(self.query("current_position")):
+                    Config.logger.warn(
+                        "Player frozen at %s on %s!" % (
+                            self.query("current_position"),
+                            self.query("current_file")
+                        )
+                    )
+                    self.query("skip")
             button_press = curses.wrapper(
                 self.display, self.displayed_text, self.curses_logger
             )
