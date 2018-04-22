@@ -38,9 +38,9 @@ class CursesInterface():
         get("%s/%s" % (Config.server_url, server_method))
 
     @staticmethod
-    def displayed_text() -> Dict[str, Dict[str, str]]:
+    def displayed_text(columns: int, lines: int) -> Dict[str, Dict[str, str]]:
         """Query the server for the value from Player.displayed_text."""
-        get(f"{Config.server_url}/displayed_text").json()
+        get(f"{Config.server_url}/displayed_text?x={columns}&y={lines}").json()
 
     def show(self):
         """Loop curses display and keycode watching.
