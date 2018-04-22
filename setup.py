@@ -2,10 +2,6 @@ from setuptools import setup
 from git.repo.base import Repo
 from os.path import dirname, realpath, exists
 import os
-help(os.chown)
-
-if not int(os.environ['UID']):
-    print("If you need to use sudo to run this installer, use sudo -E!")
 
 vcs = Repo(dirname(realpath(__file__)))
 urls = [u for u in vcs.remote().urls]
@@ -25,8 +21,6 @@ logfile = os.path.join(
 
 if not exists(logfile):
     open(logfile, 'w').close()
-    os.chown(logfile, int(os.environ['UID']), int(os.environ['GID']))
-
 
 setup(
     name="Simple Shuffle",
