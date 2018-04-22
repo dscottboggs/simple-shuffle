@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Begin the simple_shuffle and watch for commands on a port."""
-from flask import Flask, Request
+from flask import Flask, request
 from simple_shuffle.player import Player
 import click as cli
 from os.path import join as getpath
@@ -89,8 +89,8 @@ def get_pos():
 @app.route("/displayed_text")
 def displayed_text():
     return dumps(player.displayed_text(
-        maxcolumns=Request.args().get("x", 25),
-        maxlines=Request.args().get("y", 25)
+        maxcolumns=request.args.get("x", 25),
+        maxlines=request.args.get("y", 25)
     ))
 
 
