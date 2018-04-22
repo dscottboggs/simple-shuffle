@@ -18,7 +18,7 @@ from datetime import datetime
 from random import shuffle
 from blist import blist
 import click as cli
-from config import Config
+from simple_shuffle.config import Config
 
 
 log = Config.logger
