@@ -12,8 +12,7 @@ app = Flask(__name__)
 # pool = Pool(1)
 player = Player(
     getpath(root, 'home', environ['USER'], 'Music'),
-    autoplay=True,
-    curses_display=False    # keeps the player from going into a blocking loop.
+    autoplay=True
 )
 
 
