@@ -440,7 +440,6 @@ class Player:
 
     def stop_drop_and_roll(self):
         log.debug("Stopping and exiting")
-        self.socket.close()
         mixer.music.stop()
         mixer.quit()
         exit(0)
