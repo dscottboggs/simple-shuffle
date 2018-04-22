@@ -91,7 +91,7 @@ def get_pos():
 
 @app.route("/displayed_text")
 def displayed_text():
-    return dumps(player.displayed_text)
+    return dumps(player.displayed_text())
 
 
 if __name__ == '__main__':

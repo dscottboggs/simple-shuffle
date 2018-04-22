@@ -117,3 +117,6 @@ class CursesInterface():
         else:
             with open(Config.curses_logfile, 'a') as logfile:
                 logfile.write(text + '\n')
+
+
+CursesInterface()
