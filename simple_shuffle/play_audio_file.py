@@ -180,13 +180,13 @@ class Player:
     @staticmethod
     def volume_up():
         mixer.music.set_volume(
-            mixer.music.get_volume() - 0.05
+            mixer.music.get_volume() + 0.05
         )
 
     @staticmethod
     def volume_down():
         mixer.music.set_volume(
-            mixer.music.get_volume() + 0.05
+            mixer.music.get_volume() - 0.05
         )
 
     def pause_unpause(self):
