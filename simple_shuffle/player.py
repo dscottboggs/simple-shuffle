@@ -167,7 +167,7 @@ class Player:
         """Request that the audio volume be increased by 5%"""
         log.debug(
             "Volume requested to be turned up. Current volume "
-            + self.current_volume
+            + str(self.current_volume)
         )
         mixer.music.set_volume(
             self.current_volume + 0.05
@@ -177,7 +177,7 @@ class Player:
         """Request that the audio volume be decreased by 5%"""
         log.debug(
             "Volume requested to be turned down. Current volume "
-            + self.current_volume
+            + str(self.current_volume)
         )
         mixer.music.set_volume(
             self.current_volume - 0.05
