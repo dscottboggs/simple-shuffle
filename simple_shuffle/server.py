@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Begin the simple_shuffle and watch for commands on a port."""
-from flask import Flask
+from flask import Flask, Request
 from simple_shuffle.player import Player
 import click as cli
 from os.path import join as getpath
@@ -40,7 +40,6 @@ def main(*args, **kwargs):
 @app.route("/pause_unpause")
 def pause_unpause():
     """Call Player.pause_unpause on the thread."""
-#    pool.apply(player.pause_unpause)
     player.pause_unpause()
     return ''
 
@@ -55,23 +54,22 @@ def stop_drop_and_roll():
 @app.route("/skip")
 def skip():
     """Call Player.skip on the thread."""
-#    pool.apply(player.skip)
     player.skip()
+    player.begin_playback()
     return ''
 
 
 @app.route("/previous")
 def previous():
     """Call Player.previous on the thread."""
-#    pool.apply(player.previous)
     player.previous()
+    player.begin_playback()
     return ''
 
 
 @app.route("/volume_up")
 def volume_up():
     """Call Player.volume_up on the thread."""
-#    pool.apply(player.volume_up)
     player.volume_up()
     return ''
 
@@ -79,7 +77,6 @@ def volume_up():
 @app.route("/volume_down")
 def volume_down():
     """Call Player.volume_down on the thread."""
-#    pool.apply(player.volume_down)
     player.volume_down()
     return ''
 
@@ -91,7 +88,10 @@ def get_pos():
 
 @app.route("/displayed_text")
 def displayed_text():
-    return dumps(player.displayed_text())
+    return dumps(player.displayed_text(
+        maxcolumns=Request.args.get("x", 25),
+        maxlines=Request.args.get("y", 25)
+    ))
 
 
 if __name__ == '__main__':

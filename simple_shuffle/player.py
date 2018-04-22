@@ -200,6 +200,8 @@ class Player:
             "Skip-backwards button pressed.\nCurrent file: %s"
             + "\tCurrent Index:%d"
         )
+        if self.current_position < 5000:
+            return self.restart()
         try:
             return self.shuffle.previous()
         except StopIteration:
