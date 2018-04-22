@@ -303,7 +303,7 @@ class Player:
         mixer.quit()
         try:
             mixer.init(self.current_file.sample_rate)
-        except ValueError:
+        except (ValueError, TypeError):
             log.info(
                 "TinyTag couldn't parse the tags for %s"
                 % self.current_file.filepath
