@@ -5,6 +5,7 @@ from binascii import hexlify
 from strict_hint import strict
 from typing import Callable, Dict
 from requests import get
+from requests.exceptions import ConnectionError
 from datetime import datetime
 from blist import blist
 from simple_shuffle.config import Config
@@ -33,11 +34,18 @@ class CursesInterface():
         self.show()
 
     @staticmethod
+    @strict
     def query(server_method: str):
         """Query the server for a specified method."""
-        get("%s/%s" % (Config.server_url, server_method))
+        try:
+            get("%s/%s" % (Config.server_url, server_method))
+        except ConnectionError:
+            if server_method in ("stop", "quit", "stop_drop_and_roll"):
+                exit(0)
+            raise
 
     @staticmethod
+    @strict
     def displayed_text(columns: int, lines: int) -> Dict[str, Dict[str, str]]:
         """Query the server for the value from Player.displayed_text."""
         return get(
@@ -73,6 +81,7 @@ class CursesInterface():
                 #              at the index of the number received from getch()
 
     @staticmethod
+    @strict
     def display(screen, text: Callable, logger) -> int:
         """Display some text in ncurses.
 
