@@ -6,7 +6,7 @@ from strict_hint import strict
 from typing import Callable, Dict
 from requests import get
 from datetime import datetime
-import blist
+from blist import blist
 from simple_shuffle.config import Config
 
 
