@@ -7,8 +7,10 @@ vcs = Repo(dirname(realpath(__file__)))
 urls = [u for u in vcs.remote().urls]
 if len(urls) < 1:
     raise NotImplementedError()
-versionnum = len([c for c in vcs.iter_commits()])\
-    - 116   # version 0.0.* had 116 revisions
+versionnum = (len([c for c in vcs.iter_commits()])
+    - 116   # version 0.0.* had 115 revisions
+    - 57    # version 0.1.* had 56 revisions
+)
 versionstr = "0.1.%d" % versionnum
 print("Current version %s" % versionstr)
 
