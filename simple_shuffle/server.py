@@ -12,7 +12,7 @@ app = Flask(__name__)
 player = Player(
     getpath(root, 'home', environ['USER'], 'Music'),
     autoplay=True,
-    curses_display=False
+    curses_display=False    # keeps the player from going into a blocking loop.
 )
 
 
@@ -42,6 +42,7 @@ def pause_unpause():
     """Call Player.pause_unpause on the thread."""
 #    pool.apply(player.pause_unpause)
     player.pause_unpause()
+    return 200
 
 
 @app.route("/skip")
@@ -49,6 +50,7 @@ def skip():
     """Call Player.skip on the thread."""
 #    pool.apply(player.skip)
     player.skip()
+    return 200
 
 
 @app.route("/previous")
@@ -56,6 +58,7 @@ def previous():
     """Call Player.previous on the thread."""
 #    pool.apply(player.previous)
     player.previous()
+    return 200
 
 
 @app.route("/volume_up")
@@ -63,6 +66,7 @@ def volume_up():
     """Call Player.volume_up on the thread."""
 #    pool.apply(player.volume_up)
     player.volume_up()
+    return 200
 
 
 @app.route("/volume_down")
@@ -70,6 +74,7 @@ def volume_down():
     """Call Player.volume_down on the thread."""
 #    pool.apply(player.volume_down)
     player.volume_down()
+    return 200
 
 
 if __name__ == '__main__':
