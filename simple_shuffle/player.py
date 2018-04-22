@@ -158,16 +158,29 @@ class Player:
         if autoplay:
             self.begin_playback()
 
+    @property
+    def current_volume(self):
+        """Retrieve the current volume level."""
+        return mixer.music.get_volume()
+
     @staticmethod
     def volume_up():
+        log.debug(
+            "Volume requested to be turned up. Current volume "
+            + self.current_volume
+        )
         mixer.music.set_volume(
-            mixer.music.get_volume() + 0.05
+            self.current_volume + 0.05
         )
 
     @staticmethod
     def volume_down():
+        log.debug(
+            "Volume requested to be turned down. Current volume "
+            + self.current_volume
+        )
         mixer.music.set_volume(
-            mixer.music.get_volume() - 0.05
+            self.current_volume - 0.05
         )
 
     def pause_unpause(self):
@@ -197,7 +210,7 @@ class Player:
         Calls self.restart() if StopIteration is raised.
         """
         log.debug(
-            "Skip-backwards button pressed.\nCurrent file: %s"
+            "Skip-backwards action has been requested.\nCurrent file: %s"
             + "\tCurrent Index:%d"
         )
         if self.current_position < 5000:
@@ -211,7 +224,7 @@ class Player:
     def skip(self) -> str:
         """Skip to the next file in the shuffler."""
         log.debug(
-            "Skip button pressed.\nCurrent file: %s\nNext file:%s",
+            "Skip action has been requested.\nCurrent file: %s\nNext file:%s",
             self.shuffle.current,
             self.shuffle.future
         )
@@ -346,7 +359,7 @@ class Player:
             }
         })
         text.update({
-            "VOL: %f%%" % (float(mixer.music.get_volume()) * 100): {
+            "VOL: %f%%" % (float(self.current_volume) * 100): {
                 'x': int(int(maxcolumns) - 17),
                 'y': int(int(maxlines) - 1)
             }
