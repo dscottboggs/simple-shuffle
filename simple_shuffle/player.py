@@ -10,11 +10,9 @@ from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from tinytag import TinyTag, TinyTagException
 from strict_hint import strict
-from typing import Dict, Callable
+from typing import Dict
 from textwrap import wrap
-from datetime import datetime
 from random import shuffle
-from blist import blist
 import click as cli
 from simple_shuffle.config import Config
 
