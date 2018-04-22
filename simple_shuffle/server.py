@@ -6,6 +6,7 @@ import click as cli
 from os.path import join as getpath
 from os import environ
 from os import sep as root
+from json import dumps
 # from multiprocessing import Pool
 app = Flask(__name__)
 # pool = Pool(1)
@@ -76,6 +77,13 @@ def volume_down():
     player.volume_down()
     return ''
 
+
+@app.route("/current_position")
+def get_pos():
+    return str(player.current_position)
+
+@app.route("/displayed_text")
+    return dumps(player.displayed_text)
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=21212)

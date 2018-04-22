@@ -55,3 +55,4 @@ class Config:
     display_refresh_delay = 5
     sample_rate = 44100
     socket_file_location = os.path.join(root, "tmp", "simple_shuffle.sock")
+    server_url = "127.0.0.1"

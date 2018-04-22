@@ -1,16 +1,14 @@
-#!/usr/bin/env python3.6
+self.current_position#!/usr/bin/env python3.6
 """Simple keyboard controlled ncurses audio player for shuffling."""
 # SimpleAudio and PyAudio only accept .wav files, use PyGame
 from pygame import mixer
 from pygame import error as PyGameError
-from os import access, walk, environ, unlink
+from os import access, walk, environ
 from os import sep as root
-from os.path import isdir, basename, exists
+from os.path import isdir, basename
 from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from tinytag import TinyTag, TinyTagException
-import curses
-from binascii import hexlify
 from strict_hint import strict
 from typing import Dict, Callable
 from textwrap import wrap
@@ -22,23 +20,6 @@ from simple_shuffle.config import Config
 
 
 log = Config.logger
-
-
-@strict
-def char_to_int(char: str) -> int:
-    """Get the ascii value for a single character."""
-    if len(char) != 1:
-        raise ValueError(
-            "The input string can only be one character long! Received %s"
-            % char
-        )
-    return int(                 # the decimal equivalent
-        hexlify(                # of the hex value of
-            bytes(              # the string converted to a bytes-sequence
-                char, 'ascii'   # encoded as ASCII
-            )
-        ), 16
-    )
 
 
 @cli.command("shuffle")
@@ -170,16 +151,14 @@ class Player:
     """An object containing the actual player."""
     @strict
     def __init__(self,
-            folder: str,
-            autoplay: bool=True,
-            curses_display: bool=True):
+                 folder: str,
+                 autoplay: bool=True
+            ):
         """Initialize the player with a folder to shuffle."""
         self.shuffle_folder = folder
         self.shuffle = Shuffler(self.shuffle_folder)
         if autoplay:
             self.begin_playback()
-        if curses_display:
-            self.show()
 
     @staticmethod
     def volume_up():
@@ -202,7 +181,7 @@ class Player:
         else:
             log.debug(
                 "Pausing playback at %d",
-                mixer.music.get_pos() / 1000
+                self.current_position / 1000
             )
             mixer.music.pause()
             self.paused = True
@@ -312,6 +291,12 @@ class Player:
                 self.curses_logger("Song info: %s", outtxt)
                 return outtxt
 
+    @property
+    @strict
+    def current_position(self):
+        """Get the current position."""
+        return mixer.music.get_pos()
+
     @strict
     def begin_playback(self) -> None:
         """Play an audio file."""
@@ -353,7 +338,7 @@ class Player:
                 }
             })
         text.update({
-            str(int(float(mixer.music.get_pos()/1000))) + " seconds": {
+            str(int(float(self.current_position/1000))) + " seconds": {
                 'x': 2,
                 'y': int(maxlines) - 1
             }
@@ -365,82 +350,6 @@ class Player:
             }
         })
         return text
-
-    def show(self):
-        """Loop curses display and keycode watching.
-
-        When a keypress is returned from display(), it will be checked to see
-        if it's one of the ones we're watching for, then the display will
-        be refreshed again, unless the stop button is pressed, then exit.
-        """
-        while True:
-            if mixer.music.get_pos() == -1:
-                self.skip()
-                self.begin_playback()
-            button_press = curses.wrapper(
-                self.display, self.displayed_text, self.curses_logger
-            )
-            button_action = blist([None])
-            button_action *= 2**16  # I just picked that number because it'll
-            # probably be big enough. Could be 32 or 64 if need be.
-            button_action[curses.KEY_DOWN] = self.volume_down
-            button_action[curses.KEY_UP] = self.volume_up
-            button_action[curses.KEY_LEFT] = self.previous
-            button_action[curses.KEY_RIGHT] = self.skip
-            button_action[char_to_int(' ')] = self.pause_unpause
-            button_action[char_to_int('s')] = self.stop_drop_and_roll
-            button_action[char_to_int('q')] = self.stop_drop_and_roll
-            if button_action[button_press] is not None:
-                button_action[button_press]()        # call the function at the
-                #                     index of the number received from getch()
-
-    @staticmethod
-    def display(screen, text: Callable, logger) -> int:
-        """Display some text in ncurses.
-
-        This is essentially a wrapper around stdscr.addstr and stdscr.getch.
-        The text must be received in the following format:
-            text to be displayed: {
-                x: x coord
-                y: y coord
-            }
-        """
-        curses.halfdelay(Config.display_refresh_delay)
-        screen.clear()
-        logger(
-            " ------- Entering curses mode @ %s -------- ",
-            datetime.now().isoformat()
-        )
-        max_lines, max_cols = screen.getmaxyx()
-        logger("Max width: %d\nMax height:%d", max_cols, max_lines)
-        for txt, coords in text(max_cols, max_lines).items():
-            logger(
-                "Adding string %s\nAt %d columns by %d lines",
-                txt,
-                coords['x'],
-                coords['y']
-            )
-            screen.addstr(
-                coords['y'],
-                coords['x'],
-                txt
-            )
-        screen.refresh()
-        return screen.getch()
-
-    @staticmethod
-    @strict
-    def curses_logger(text: str, *fstrings):
-        """Function compatible with logger.funcs to write to a file.
-
-        You can't display shit when curses is active.
-        """
-        if fstrings:
-            with open(Config.curses_logfile, 'a') as logfile:
-                logfile.write(text % fstrings + '\n')
-        else:
-            with open(Config.curses_logfile, 'a') as logfile:
-                logfile.write(text + '\n')
 
     def stop_drop_and_roll(self):
         log.debug("Stopping and exiting")
