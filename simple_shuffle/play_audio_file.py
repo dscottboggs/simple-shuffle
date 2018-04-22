@@ -18,7 +18,6 @@ from datetime import datetime
 from random import shuffle
 from blist import blist
 import click as cli
-import socket
 from config import Config
 
 
@@ -397,18 +396,9 @@ class Player:
             if mixer.music.get_pos() == -1:
                 self.skip()
                 self.begin_playback()
-            try:
-                data_from_socket, _ = self.socket.accept()
-            except BlockingIOError:
-                data_from_socket = None
-            if data_from_socket:
-                # parse data from socket
-                ...
-            else:
-                button_press = curses.wrapper(
-                    self.display, self.displayed_text, self.curses_logger
-                )
-
+            button_press = curses.wrapper(
+                self.display, self.displayed_text, self.curses_logger
+            )
             button_action = blist([None])
             button_action *= 2**16  # I just picked that number because it'll
             # probably be big enough. Could be 32 or 64 if need be.
