@@ -45,6 +45,13 @@ def pause_unpause():
     return ''
 
 
+@app.route("/quit")
+@app.route("/stop")
+def stop_drop_and_roll():
+    player.stop_drop_and_roll()
+    exit(0)
+
+
 @app.route("/skip")
 def skip():
     """Call Player.skip on the thread."""
