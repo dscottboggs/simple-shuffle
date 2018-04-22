@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.6
 """A curses interface to the Flask server API."""
 import curses
 from binascii import hexlify
