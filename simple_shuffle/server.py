@@ -89,8 +89,8 @@ def get_pos():
 @app.route("/displayed_text")
 def displayed_text():
     return dumps(player.displayed_text(
-        maxcolumns=Request.args.get("x", 25),
-        maxlines=Request.args.get("y", 25)
+        maxcolumns=Request.args["x"],
+        maxlines=Request.args["y"]
     ))
 
 
