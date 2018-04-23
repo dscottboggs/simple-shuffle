@@ -4,7 +4,7 @@ import curses
 from binascii import hexlify
 from strict_hint import strict
 from typing import Callable, Dict, Union
-from requests import get
+from requests import get, Response
 from requests.exceptions import ConnectionError
 from datetime import datetime
 from blist import blist
@@ -66,7 +66,7 @@ class CursesInterface():
 
     @staticmethod
     @strict
-    def query(server_method: str):
+    def query(server_method: str) -> Response:
         """Query the server for a specified method."""
         try:
             return get("%s/%s" % (Config.server_url, server_method))
