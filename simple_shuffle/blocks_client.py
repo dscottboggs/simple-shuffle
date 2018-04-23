@@ -63,6 +63,30 @@ if instance == "playpause":
         raise ValueError("Expected 200 or 204, got %d" % response.status_code)
     play_click_handler(response.status_code == 200)
 
+
+if instance == "songinfo":
+    # Show text from the song_info method
+    info = query("song_info").content.decode()
+    print(info)
+    if ", track" in info:
+        print(info.split(", track")[0])
+    else:
+        print(info)
+    print(color)
+    exit(0)
+
+if instance == "songinfo.short":
+    # Show text from the song_info method
+    info = query("song_info").content.decode()
+    if ", track" in info:
+        print(info.split(", track")[0])
+        print(info.split(", track")[0])
+    else:
+        print(info)
+        print(info)
+    print(color)
+    exit(0)
+
 print(
     "Block %s, %s" % (
         instance,
