@@ -68,6 +68,8 @@ class CursesInterface():
     @strict
     def query(server_method: str) -> Response:
         """Query the server for a specified method."""
+        if server_method == "disconnect":
+            exit(0)
         try:
             return get("%s/%s" % (Config.server_url, server_method))
         except ConnectionError:
@@ -120,7 +122,7 @@ class CursesInterface():
             button_action[curses.KEY_RIGHT] = "skip"
             button_action[char_to_int(' ')] = "pause_unpause"
             button_action[char_to_int('s')] = "stop_drop_and_roll"
-            button_action[char_to_int('q')] = "stop_drop_and_roll"
+            button_action[char_to_int('q')] = "disconnect"
             if button_action[button_press] is not None:
                 self.query(button_action[button_press])     # call the function
                 #              at the index of the number received from getch()
