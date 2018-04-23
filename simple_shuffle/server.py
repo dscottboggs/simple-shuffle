@@ -68,6 +68,13 @@ def previous() -> str:
     return ''
 
 
+@app.route("/current_volume")
+@strict
+def current_volume() -> str:
+    """Retrieve the current volume as a str of a float between 0 and 1."""
+    return str(player.current_volume)
+
+
 @app.route("/volume_up")
 @strict
 def volume_up() -> str:
