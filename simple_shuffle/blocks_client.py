@@ -9,7 +9,8 @@ color = "#FFFFFF"
 
 
 @strict
-def tryget(endpoint: str) -> Response:
+def query(endpoint: str) -> Response:
+    """Attempt to get the specified API endpoint, or show no server message."""
     try:
         return get("%s/%s" % (base_url, endpoint))
     except ConnectionError:
@@ -33,26 +34,34 @@ def play_click_handler(paused: bool):
     if paused:
         if click == 1:
             # Button clicked and state is paued
-            tryget("%s/pause_unpause" % base_url)
+            query("pause_unpause")
             print("▶")
             print("▶")
             print(color)
             exit(0)
-    if click == 1:
-        tryget("%s/pause_unpause" % base_url)
         print("▮▮")
         print("▮▮")
         print(color)
         exit(0)
+    if click == 1:
+        query("pause_unpause")
+        print("▮▮")
+        print("▮▮")
+        print(color)
+        exit(0)
+    print("▶")
+    print("▶")
+    print(color)
+    exit(0)
 
 
 if instance == "playpause":
     # The play-pause button.
-    response = tryget("%s/isplaying" % base_url)
+    response = query("isplaying")
     if response.status_code not in (200, 204):
         response.raise_for_status()
         raise ValueError("Expected 200 or 204, got %d" % response.status_code)
-    play_click_handler(response.status_code == 204)
+    play_click_handler(response.status_code == 200)
 
 print(
     "Block %s, %s" % (
