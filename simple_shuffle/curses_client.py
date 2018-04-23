@@ -55,12 +55,17 @@ class CursesInterface():
         self.freezedetect = FrozenDetector()
         self.show()
 
+    @property
+    @strict
+    def paused(self):
+        return self.query("isplaying").status_code == 200
+
     @staticmethod
     @strict
     def query(server_method: str):
         """Query the server for a specified method."""
         try:
-            get("%s/%s" % (Config.server_url, server_method))
+            return get("%s/%s" % (Config.server_url, server_method))
         except ConnectionError:
             if server_method in ("stop", "quit", "stop_drop_and_roll"):
                 exit(0)
