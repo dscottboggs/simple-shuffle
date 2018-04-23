@@ -362,7 +362,7 @@ class Player:
                 }
             })
         text.update({
-            str(int(float(self.current_position/1000))) + " seconds": {
+            self.current_time: {
                 'x': 2,
                 'y': int(int(maxlines)) - 1
             }
