@@ -8,12 +8,16 @@ from json import dumps
 # from multiprocessing import Pool
 app = Flask(__name__)
 # pool = Pool(1)
-player = Player(
-    environ['SIMPLE_SHUFFLE_FOLDER']
-    or getpath(environ['HOME'], 'Music'),
-    autoplay=True
-)
-
+try:
+    player = Player(
+        environ['SIMPLE_SHUFFLE_FOLDER'],
+        autoplay=True
+    )
+except KeyError:
+    player = Player(
+        getpath(environ['HOME'], 'Music'),
+        autoplay=True
+    )
 
 @app.route("/pause_unpause")
 def pause_unpause():
