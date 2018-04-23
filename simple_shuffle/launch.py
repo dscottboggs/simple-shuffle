@@ -10,7 +10,7 @@ from simple_shuffle.curses_client import CursesInterface
 def main(*args, **kwargs):
     """Simply shuffle your library. That's all.
 
-    You can enable just the server backend wit the server_only option, and
+    You can enable just the server backend with the server_only option, and
     specify the folder to be shuffled. An ncurses display is enabled by
     default.
     """
