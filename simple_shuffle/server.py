@@ -19,6 +19,19 @@ except KeyError:
         autoplay=True
     )
 
+
+@app.route("/isplaying")
+def isplaying():
+    """Get whether or not the player is paused with HTTP response codes.
+
+    Returns 200/OK if the player is playing now, '204/No Content' if it's
+    paused.
+    """
+    if not player.paused:
+        return '', 204
+    return '', 200
+
+
 @app.route("/pause_unpause")
 def pause_unpause():
     """Call Player.pause_unpause on the thread."""
