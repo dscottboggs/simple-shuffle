@@ -5,6 +5,8 @@ from simple_shuffle.player import Player
 from os.path import join as getpath
 from os import environ
 from json import dumps
+from strict_hint import strict
+from typing import Tuple
 # from multiprocessing import Pool
 app = Flask(__name__)
 # pool = Pool(1)
@@ -21,7 +23,7 @@ except KeyError:
 
 
 @app.route("/isplaying")
-def isplaying():
+def isplaying() -> Tuple[str, int]:
     """Get whether or not the player is paused with HTTP response codes.
 
     Returns 200/OK if the player is playing now, '204/No Content' if it's
@@ -33,7 +35,7 @@ def isplaying():
 
 
 @app.route("/pause_unpause")
-def pause_unpause():
+def pause_unpause() -> str:
     """Call Player.pause_unpause on the thread."""
     player.pause_unpause()
     return ''
@@ -49,7 +51,8 @@ def stop_drop_and_roll():
 
 
 @app.route("/skip")
-def skip():
+@strict
+def skip() -> str:
     """Call Player.skip on the thread."""
     player.skip()
     player.begin_playback()
@@ -57,7 +60,8 @@ def skip():
 
 
 @app.route("/previous")
-def previous():
+@strict
+def previous() -> str:
     """Call Player.previous on the thread."""
     player.previous()
     player.begin_playback()
@@ -65,43 +69,52 @@ def previous():
 
 
 @app.route("/volume_up")
-def volume_up():
+@strict
+def volume_up() -> str:
     """Call Player.volume_up on the thread."""
     player.volume_up()
     return ''
 
 
 @app.route("/volume_down")
-def volume_down():
+@strict
+def volume_down() -> str:
     """Call Player.volume_down on the thread."""
     player.volume_down()
     return ''
 
 
 @app.route("/current_position")
-def get_pos():
+@strict
+def get_pos() -> str:
     """Return the current time as milliseconds."""
     return str(player.current_position)
 
 
 @app.route("/current_time")
-def gettime():
+@strict
+def gettime() -> str:
     """Return the current time as M:SS format."""
     return player.current_time
 
 
 @app.route("/song_info")
-def song_info():
+@strict
+def song_info() -> str:
+    """Get just the song-info text generated from the tags or filename."""
     return player.song_info
 
 
 @app.route("/current_file")
-def current_file():
-    return player.current_file
+@strict
+def current_file() -> str:
+    """Retrieve the current filename."""
+    return player.current_file.filepath
 
 
 @app.route("/displayed_text")
-def displayed_text():
+@strict
+def displayed_text() -> str:
     """Retrieve the current text to display, given lines and columns.
 
     This is for the curses client, other clients should implement different
