@@ -10,7 +10,7 @@ from os.path import join as getpath
 from os import R_OK as FILE_IS_READABLE
 from tinytag import TinyTag, TinyTagException
 from strict_hint import strict
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 from textwrap import wrap
 from random import shuffle
 import click as cli
@@ -62,14 +62,14 @@ class Shuffler:
         return self
 
     @property
-    def future(self):
+    def future(self) -> Optional[str]:
         try:
             return self.files[self.index]
         except IndexError:
             return None
 
     @property
-    def past(self):
+    def past(self) -> Optional[str]:
         try:
             return self.files[self.index - 2]
         except IndexError:
@@ -82,7 +82,7 @@ class Shuffler:
         else:
             raise StopIteration
 
-    def next(self):
+    def next(self) -> str:
         """Get the current iteration point, and increment the index."""
         if self.index < len(self.files):
             self.index += 1
@@ -91,7 +91,7 @@ class Shuffler:
             raise StopIteration
 
     @property
-    def current(self):
+    def current(self) -> str:
         """Get the current iteration point without updating the index."""
         return self.files[self.index - 1]
 
@@ -132,7 +132,8 @@ class PlayingFile:
         return get_filename(self.current_file.filepath)
 
     @property
-    def sample_rate(self):
+    @strict
+    def sample_rate(self) -> int:
         """Attempt to retrieve the sample rate.
 
         In the case that the attempt fails, raise ValueError.
@@ -159,7 +160,8 @@ class Player:
             self.begin_playback()
 
     @property
-    def current_volume(self):
+    @strict
+    def current_volume(self) -> float:
         """Retrieve the current volume level."""
         return mixer.music.get_volume()
 
