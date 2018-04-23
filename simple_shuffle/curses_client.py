@@ -48,6 +48,10 @@ class FrozenDetector:
             return True
         return False
 
+    def reset(self):
+        self.same_counter = 0
+        self.time_value = 0
+
 
 class CursesInterface():
     """A curses interface to the Flask server API."""
@@ -87,18 +91,22 @@ class CursesInterface():
         be refreshed again, unless the stop button is pressed, then exit.
         """
         while True:
-            if self.query("current_position") == -1:
+            current_position = int(
+                self.query("current_position").content.decode()
+            )
+            if current_position == -1:
                 self.query("skip")
             if not self.paused:
                 if self.freezedetect.check(
-                            self.query("current_position").content.decode()
+                            current_position
                         ):
                     Config.logger.warn(
                         "Player frozen at %s on %s!" % (
-                            self.query("current_position"),
-                            self.query("current_file")
+                            current_position,
+                            self.query("current_file").content.decode()
                         )
                     )
+                    self.freezedetect.reset()
                     self.query("skip")
             button_press = curses.wrapper(
                 self.display, self.displayed_text, self.curses_logger
