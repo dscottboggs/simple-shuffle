@@ -85,11 +85,25 @@ def volume_down():
 
 @app.route("/current_position")
 def get_pos():
+    """Return the current time as milliseconds."""
     return str(player.current_position)
+
+
+@app.route("/current_time")
+def gettime():
+    """Return the current time as M:SS format."""
+    return player.current_time
 
 
 @app.route("/displayed_text")
 def displayed_text():
+    """Retrieve the current text to display, given lines and columns.
+
+    This is for the curses client, other clients should implement different
+    methods for getting this data, that doesn't depend on lines and columns,
+    unless lines and columns are convenient, but I really can't see another
+    use for that outside of curses.
+    """
     return dumps(player.displayed_text(
         maxcolumns=request.args.get("x", 25),
         maxlines=request.args.get("y", 25)
