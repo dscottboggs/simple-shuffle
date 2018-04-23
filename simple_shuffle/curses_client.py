@@ -35,7 +35,7 @@ class FrozenDetector:
         self.time_value: int = 0
 
     @strict
-    def check_if_frozen(self, time: Union[int, str, float]) -> bool:
+    def check(self, time: Union[int, str, float]) -> bool:
         """Get whether or not the time has been the same for too long.
 
         "Too long" is defined in config.py as Config.frozen_threshold.
@@ -85,7 +85,9 @@ class CursesInterface():
             if self.query("current_position") == -1:
                 self.query("skip")
             if not self.paused:
-                if self.freezedetect.check(self.query("current_position")):
+                if self.freezedetect.check(
+                            self.query("current_position").content.decode()
+                        ):
                     Config.logger.warn(
                         "Player frozen at %s on %s!" % (
                             self.query("current_position"),
