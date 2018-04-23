@@ -87,9 +87,12 @@ if instance == "songinfo.short":
     print(color)
     exit(0)
 
-print(
-    "Block %s, %s" % (
-        instance,
-        "Button %s clicked" % click if click else "Not clicked."
-    )
-)
+if instance == "skip.forward":
+    if click == 1:
+        query("skip")
+    print("»", "»", color, sep='\n')
+
+if instance == "skip.backward":
+    if click == 1:
+        query("previous")
+    print("«", "«", color, sep='\n')
