@@ -27,10 +27,22 @@ class FrozenDetector:
         will throw a ValueError and a value like 1.04309 will cause
         unpredicatble results.
         """
+        Config.logger.debug(
+            "Checking if frozen. Time: %d; Stored time: %d; Counter %d",
+            int(time),
+            self.time_value,
+            self.same_counter
+        )
         if self.time_value == int(time):
             self.same_counter += 1
         self.time_value = int(time)
         if self.same_counter >= Config.frozen_threshold:
+            Config.logger.warn(
+                "Frozen! Time: %d; Stored time: %d; Counter %d",
+                int(time),
+                self.time_value,
+                self.same_counter
+            )
             return True
         return False
 
