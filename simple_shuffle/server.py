@@ -47,6 +47,7 @@ class PlayerServer(Flask):
         """Check to see if the player is frozen."""
         if self.frozen.check(self.player.current_position):
             player.skip()
+            player.begin_playback()
             self.frozen.reset()
 
 
