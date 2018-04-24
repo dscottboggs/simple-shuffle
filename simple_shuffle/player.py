@@ -215,7 +215,7 @@ class Player:
             "Skip-backwards action has been requested.\nCurrent file: %s"
             + "\tCurrent Index:%d"
         )
-        if self.current_position < 5000:
+        if 0 < self.current_position < 5000:
             return self.restart()
         try:
             return self.shuffle.previous()
