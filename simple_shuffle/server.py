@@ -13,6 +13,7 @@ from simple_shuffle.config import Config
 class FrozenDetector:
     """Detect that playback has stalled."""
     def __init__(self):
+        Config.logger.debug("Initializing the FrozenDetector")
         self.same_counter: int = 0
         self.time_value: int = 0
 
@@ -55,12 +56,23 @@ class PlayerServer(Flask):
     def __init__(self, *args, **kwargs):
         self.frozen = FrozenDetector()
         super().__init__(*args, **kwargs)
-    def before_request(self):
-        """Check to see if the player is frozen."""
+
+    @strict
+    def add_url_rule(self, *args, **kwargs) -> Response:
         if self.frozen.check(self.player.current_position):
             player.skip()
             player.begin_playback()
             self.frozen.reset()
+        return super().add_url_rule(*args, **kwargs)
+
+
+# Using before_request didn't seem to work.
+# def before_request(self):
+#     """Check to see if the player is frozen."""
+#     if self.frozen.check(self.player.current_position):
+#         player.skip()
+#         player.begin_playback()
+#         self.frozen.reset()
 
 
 app = PlayerServer(__name__)
