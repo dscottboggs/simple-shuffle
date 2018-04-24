@@ -53,9 +53,9 @@ class FrozenDetector:
 
 class PlayerServer(Flask):
     """The Flask server object to pair with the player."""
-    def __init__(self, player, *args, **kwargs):
+    def __init__(self, import_name, player, *args, **kwargs):
         self.frozen = FrozenDetector()
-        super().__init__(*args, **kwargs)
+        super().__init__(import_name, *args, **kwargs)
 
     @strict
     def add_url_rule(
