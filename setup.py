@@ -10,8 +10,9 @@ if len(urls) < 1:
 versionnum = (len([c for c in vcs.iter_commits()])
     - 116   # version 0.0.* had 115 revisions
     - 57    # version 0.1.* had 56 revisions
+    - 71    # version 0.2.* had 70 revisions
 )
-versionstr = "0.2.%d" % versionnum
+versionstr = "0.3.%d" % versionnum
 print("Current version %s" % versionstr)
 
 logfile = os.path.join(
