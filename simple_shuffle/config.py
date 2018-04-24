@@ -32,12 +32,12 @@ def get_logging_config():
                 "testhandler": {
                     "class": "logging.StreamHandler",
                     "formatter": "brief",
-                    "level": DEBUG
+                    "level": WARN
                 }
             },
             "root": {
                 "handlers": ["testhandler"],
-                "level": DEBUG
+                "level": WARN
             }
         }
 
