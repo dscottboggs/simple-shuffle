@@ -8,6 +8,7 @@ from requests import get, Response
 from requests.exceptions import ConnectionError
 from datetime import datetime
 from blist import blist
+from simple_shuffle.server import FrozenDetector
 from simple_shuffle.config import Config
 
 
@@ -26,31 +27,6 @@ def char_to_int(char: str) -> int:
             )
         ), 16
     )
-
-
-class FrozenDetector:
-    """Detect that playback has stalled."""
-    def __init__(self):
-        self.same_counter: int = 0
-        self.time_value: int = 0
-
-    @strict
-    def check(self, time: Union[int, str, float]) -> bool:
-        """Get whether or not the time has been the same for too long.
-
-        "Too long" is defined in config.py as Config.frozen_threshold.
-        returns a boolean based on whether or not it's "frozen".
-        """
-        if self.time_value == int(time):
-            self.same_counter += 1
-        self.time_value = int(time)
-        if self.same_counter >= Config.frozen_threshold:
-            return True
-        return False
-
-    def reset(self):
-        self.same_counter = 0
-        self.time_value = 0
 
 
 class CursesInterface():

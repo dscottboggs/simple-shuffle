@@ -11,31 +11,6 @@ base_url = "http://localhost:5000"
 color = "#FFFFFF"
 
 
-class FrozenDetector:
-    """Detect that playback has stalled."""
-    def __init__(self):
-        self.same_counter: int = 0
-        self.time_value: int = 0
-
-    @strict
-    def check(self, time: Union[int, str, float]) -> bool:
-        """Get whether or not the time has been the same for too long.
-
-        "Too long" is defined in config.py as Config.frozen_threshold.
-        returns a boolean based on whether or not it's "frozen".
-        """
-        if self.time_value == int(time):
-            self.same_counter += 1
-        self.time_value = int(time)
-        if self.same_counter >= Config.frozen_threshold:
-            return True
-        return False
-
-    def reset(self):
-        self.same_counter = 0
-        self.time_value = 0
-
-
 @strict
 def query(endpoint: str) -> Response:
     """Attempt to get the specified API endpoint, or show no server message."""
@@ -56,7 +31,6 @@ try:
 except (KeyError, ValueError):
     click = None
 
-frozen = FrozenDetector()
 
 def play_click_handler(paused: bool):
     """Play or pause and display the play/pause button."""
@@ -124,9 +98,6 @@ if instance == "skip.forward":
 
 if instance == "skip.backward":
     current_time = int(query("current_position").content.decode())
-    if frozen.check(current_time):
-        query("skip")
-        frozen.reset()
     if click == 1 and current_time < 5000:
         query("previous")
     elif click == 1:
@@ -140,7 +111,7 @@ if instance == "volume":
         query("volume_down")
     if click == 5:
         query("volume_up")
-    vol = float(query("current_volume") / 100)
+    vol = int(float(query("current_volume").content.decode()) * 100)
     print("{}%".format(vol))
     print("{}%".format(vol))
     print(color)

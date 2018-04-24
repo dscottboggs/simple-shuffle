@@ -14,7 +14,7 @@ def main(*args, **kwargs):
     specify the folder to be shuffled. An ncurses display is enabled by
     default.
     """
-    os.environ["SIMPLE_SHUFFLE_FOLDER"] = kwargs['shuffle_folder']\
+    os.environ["simple_shuffle_folder"] = kwargs['shuffle_folder']\
         or os.path.join(
             os.environ['HOME'], "Music"
         )
