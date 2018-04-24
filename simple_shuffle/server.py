@@ -51,31 +51,12 @@ class FrozenDetector:
         self.same_counter = 0
         self.time_value = 0
 
-class PlayerServer(Flask):
-    """The Flask server object to pair with the player."""
-    def __init__(self, import_name, player, *args, **kwargs):
-        self.frozen = FrozenDetector()
-        self.player = player
-        super().__init__(import_name, *args, **kwargs)
-
-    @strict
-    def add_url_rule(
-                self, rule, endpoint=None, view_func=None, **options
-            ) -> Response:
-        if self.frozen.check(self.player.current_position):
-            self.player.skip()
-            self.player.begin_playback()
-            self.frozen.reset()
-        return super().add_url_rule(rule, endpoint, view_func, **options)
-
-
-# Using before_request didn't seem to work.
-# def before_request(self):
-#     """Check to see if the player is frozen."""
-#     if self.frozen.check(self.player.current_position):
-#         player.skip()
-#         player.begin_playback()
-#         self.frozen.reset()
+# class PlayerServer(Flask):
+#     """The Flask server object to pair with the player."""
+#     def __init__(self, import_name, player, *args, **kwargs):
+#         self.frozen = FrozenDetector()
+#         self.player = player
+#         super().__init__(import_name, *args, **kwargs)
 
 
 try:
@@ -86,7 +67,17 @@ except KeyError:
     except KeyError:
         player = Player(getpath('/', 'home', environ['USER'], "Music"))
 
-app = PlayerServer(__name__, player=player)
+app = Flask(__name__)
+frozen = FrozenDetector()
+
+
+@app.before_request
+def check_frozen():
+    """Check to see if the player is frozen."""
+    if frozen.check(player.current_position):
+        player.skip()
+        player.begin_playback()
+        frozen.reset()
 
 
 def isplaying() -> Tuple[str, int]:
