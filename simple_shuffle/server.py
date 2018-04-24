@@ -58,12 +58,14 @@ class PlayerServer(Flask):
         super().__init__(*args, **kwargs)
 
     @strict
-    def add_url_rule(self, *args, **kwargs) -> Response:
+    def add_url_rule(
+                self, rule, endpoint=None, view_func=None, **options
+            ) -> Response:
         if self.frozen.check(self.player.current_position):
             player.skip()
             player.begin_playback()
             self.frozen.reset()
-        return super().add_url_rule(*args, **kwargs)
+        return super().add_url_rule(rule, endpoint, view_func, **options)
 
 
 # Using before_request didn't seem to work.
