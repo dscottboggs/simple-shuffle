@@ -53,7 +53,7 @@ class FrozenDetector:
 
 class PlayerServer(Flask):
     """The Flask server object to pair with the player."""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, player, *args, **kwargs):
         self.frozen = FrozenDetector()
         super().__init__(*args, **kwargs)
 
@@ -62,8 +62,8 @@ class PlayerServer(Flask):
                 self, rule, endpoint=None, view_func=None, **options
             ) -> Response:
         if self.frozen.check(self.player.current_position):
-            player.skip()
-            player.begin_playback()
+            self.player.skip()
+            self.player.begin_playback()
             self.frozen.reset()
         return super().add_url_rule(rule, endpoint, view_func, **options)
 
@@ -77,8 +77,6 @@ class PlayerServer(Flask):
 #         self.frozen.reset()
 
 
-app = PlayerServer(__name__)
-
 try:
     player = Player(environ['simple_shuffle_folder'])
 except KeyError:
@@ -86,6 +84,8 @@ except KeyError:
         player = Player(getpath(environ['HOME'], "Music"))
     except KeyError:
         player = Player(getpath('/', 'home', environ['USER'], "Music"))
+
+app = PlayerServer(__name__, player=player)
 
 
 def isplaying() -> Tuple[str, int]:
