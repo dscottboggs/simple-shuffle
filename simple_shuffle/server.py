@@ -55,6 +55,7 @@ class PlayerServer(Flask):
     """The Flask server object to pair with the player."""
     def __init__(self, import_name, player, *args, **kwargs):
         self.frozen = FrozenDetector()
+        self.player = player
         super().__init__(import_name, *args, **kwargs)
 
     @strict
