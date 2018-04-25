@@ -97,12 +97,9 @@ if instance == "skip.forward":
     exit(0)
 
 if instance == "skip.backward":
-    current_time = int(query("current_position").content.decode())
-    if click == 1 and current_time < 5000:
+    if click == 1:
         query("previous")
-    elif click == 1:
-        query("restart")
-    sym = "|<<" if current_time < 5000 else "<<"
+    sym = "|<<"
     print(sym, sym, color, sep='\n')
     exit(0)
 
