@@ -74,10 +74,11 @@ frozen = FrozenDetector()
 @app.before_request
 def check_frozen():
     """Check to see if the player is frozen."""
-    if frozen.check(player.current_position):
-        player.skip()
-        player.begin_playback()
-        frozen.reset()
+    if player.paused:
+        if frozen.check(player.current_position):
+            player.skip()
+            player.begin_playback()
+            frozen.reset()
 
 
 def isplaying() -> Tuple[str, int]:
